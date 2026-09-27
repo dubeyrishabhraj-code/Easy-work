@@ -1,0 +1,408 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Student Project Management</title>
+<style>
+:root{
+  --bg:#f5f6fa; --card:#ffffff; --text:#1c1e21; --muted:#6b7280;
+  --primary:#4f46e5; --primary-text:#ffffff; --border:#e5e7eb; --danger:#dc2626;
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px);
+  padding-bottom:env(safe-area-inset-bottom,0px);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#111318; --card:#1c1f26; --text:#eef0f3; --muted:#9aa1ac;
+    --primary:#818cf8; --primary-text:#111318; --border:#2a2e37;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#111318; --card:#1c1f26; --text:#eef0f3; --muted:#9aa1ac;
+  --primary:#818cf8; --primary-text:#111318; --border:#2a2e37;
+}
+*{box-sizing:border-box;}
+html{scroll-padding-top:env(safe-area-inset-top,0px);}
+body{
+  margin:0; background:var(--bg); color:var(--text);
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;
+  min-height:100%;
+}
+.app{max-width:520px; margin:0 auto; padding:20px 16px 40px;}
+h1{font-size:1.4rem; margin:8px 0 4px;}
+.sub{color:var(--muted); margin:0 0 20px; font-size:0.95rem;}
+.card{background:var(--card); border:1px solid var(--border); border-radius:14px; padding:16px; margin-bottom:14px;}
+.btn{
+  display:block; width:100%; padding:14px; margin:8px 0; border:none; border-radius:12px;
+  background:var(--primary); color:var(--primary-text); font-size:1rem; font-weight:600;
+  cursor:pointer; text-align:center;
+}
+.btn.secondary{background:transparent; color:var(--text); border:1px solid var(--border); font-weight:500;}
+.btn.danger{background:var(--danger); color:#fff;}
+.grid2{display:grid; grid-template-columns:1fr 1fr; gap:10px;}
+label{display:block; font-size:0.85rem; font-weight:600; margin:12px 0 4px; color:var(--muted);}
+input,select,textarea{
+  width:100%; padding:11px; border-radius:10px; border:1px solid var(--border);
+  background:var(--bg); color:var(--text); font-size:1rem;
+}
+textarea{min-height:70px; resize:vertical;}
+.list-item{
+  display:flex; justify-content:space-between; align-items:center;
+  padding:12px; border:1px solid var(--border); border-radius:10px; margin-bottom:8px; background:var(--bg); cursor:pointer;
+}
+.list-item:active{opacity:0.7;}
+.topbar{display:flex; align-items:center; gap:10px; margin-bottom:16px;}
+.topbar .btn{width:auto; margin:0; padding:8px 14px; font-size:0.9rem;}
+.detail-row{display:flex; flex-direction:column; margin-bottom:12px;}
+.detail-row .k{font-size:0.8rem; color:var(--muted); font-weight:600;}
+.detail-row .v{font-size:1rem; margin-top:2px; white-space:pre-wrap;}
+.empty{text-align:center; color:var(--muted); padding:30px 0;}
+.status{font-size:0.85rem; color:var(--muted); margin-bottom:10px; min-height:18px;}
+</style>
+</head>
+<body>
+<div class="app" id="app"></div>
+
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+<script>
+const firebaseConfig = {
+  apiKey: "AIzaSyBhXv0TVBAuOk-XLsG0g1PjaUYwmUmaThs",
+  authDomain: "rishabh-works-kit.firebaseapp.com",
+  projectId: "rishabh-works-kit",
+  storageBucket: "rishabh-works-kit.firebasestorage.app",
+  messagingSenderId: "219975181347",
+  appId: "1:219975181347:web:e1ab2d0167c2a650303d96",
+  measurementId: "G-G5DS6BP0FK"
+};
+
+let db = null;
+let dbReady = false;
+const YEARS = ["1st Year","2nd Year","3rd Year","4th Year"];
+const SECTIONS = ["A","B","C","D"];
+let editingId = null;
+
+const app = document.getElementById("app");
+
+async function initDb(){
+  try{
+    if(!firebase.apps.length){ firebase.initializeApp(firebaseConfig); }
+    db = firebase.firestore();
+  }catch(e){ db = null; }
+  dbReady = true;
+}
+
+function render(html){ app.innerHTML = html; }
+
+function topbar(title, backFn){
+  return `<div class="topbar">
+    <button class="btn secondary" style="width:auto" onclick="(${backFn})()">⬅</button>
+    <h1 style="margin:0">${title}</h1>
+  </div>`;
+}
+
+// ---------------- HOME ----------------
+function showHome(){
+  render(`
+    <h1>Student Project Management</h1>
+    <p class="sub">Are you a Student or Teacher?</p>
+    <button class="btn" onclick="showStudentMenu()">👨‍🎓 STUDENT</button>
+    <button class="btn" onclick="showTeacherYears()">👨‍🏫 TEACHER</button>
+    <p class="status" id="dbstatus"></p>
+  `);
+  checkDbStatus();
+}
+async function checkDbStatus(){
+  if(!dbReady) await initDb();
+  const el = document.getElementById("dbstatus");
+  if(el) el.textContent = db ? "" : "Could not connect to storage. Check your internet connection.";
+}
+
+// ---------------- STUDENT MENU ----------------
+function showStudentMenu(){
+  render(`
+    ${topbar("Student Portal","showHome")}
+    <button class="btn" onclick="showRegisterForm()">📝 Register / Add Project</button>
+    <button class="btn" onclick="showUpdateSearch()">✏️ Update Existing Details</button>
+  `);
+}
+
+// ---------------- REGISTER / UPDATE FORM ----------------
+function formHtml(data, isUpdate){
+  data = data || {};
+  return `
+    ${topbar(isUpdate ? "Update Details" : "Student Registration", "showStudentMenu")}
+    <div class="card">
+      <label>Student Name</label>
+      <input id="f_name" value="${esc(data.name||'')}">
+      <label>Branch</label>
+      <input id="f_branch" value="${esc(data.branch||'')}">
+      <label>Course</label>
+      <input id="f_course" value="${esc(data.course||'')}">
+      <label>Project Name</label>
+      <input id="f_project" value="${esc(data.project||'')}">
+      <label>Presentation</label>
+      <textarea id="f_presentation">${esc(data.presentation||'')}</textarea>
+      <label>Prototype</label>
+      <textarea id="f_prototype">${esc(data.prototype||'')}</textarea>
+      <div class="grid2">
+        <div>
+          <label>Year</label>
+          <select id="f_year">
+            <option value="">Select</option>
+            ${YEARS.map(y=>`<option ${data.year===y?'selected':''}>${y}</option>`).join('')}
+          </select>
+        </div>
+        <div>
+          <label>Section</label>
+          <select id="f_section">
+            <option value="">Select</option>
+            ${SECTIONS.map(s=>`<option ${data.section===s?'selected':''}>${s}</option>`).join('')}
+          </select>
+        </div>
+      </div>
+      <p class="status" id="formstatus"></p>
+      <button class="btn" onclick="${isUpdate?'saveUpdate()':'saveRegistration()'}">💾 ${isUpdate?'Update Details':'Save Registration'}</button>
+    </div>
+  `;
+}
+function showRegisterForm(){
+  editingId = null;
+  render(formHtml(null,false));
+}
+function readForm(){
+  return {
+    name: document.getElementById("f_name").value.trim(),
+    branch: document.getElementById("f_branch").value.trim(),
+    course: document.getElementById("f_course").value.trim(),
+    project: document.getElementById("f_project").value.trim(),
+    presentation: document.getElementById("f_presentation").value.trim(),
+    prototype: document.getElementById("f_prototype").value.trim(),
+    year: document.getElementById("f_year").value,
+    section: document.getElementById("f_section").value,
+  };
+}
+function validate(d){
+  if(!d.name) return "Please enter student name.";
+  if(!d.branch) return "Please enter branch.";
+  if(!d.course) return "Please enter course.";
+  if(!d.project) return "Please enter project name.";
+  if(!d.year) return "Please select year.";
+  if(!d.section) return "Please select section.";
+  return null;
+}
+async function saveRegistration(){
+  const d = readForm();
+  const err = validate(d);
+  const statusEl = document.getElementById("formstatus");
+  if(err){ statusEl.textContent = err; return; }
+  if(!dbReady) await initDb();
+  if(!db){ statusEl.textContent = "Could not save — data storage is unavailable."; return; }
+  try{
+    await db.collection("students").add({...d, createdAt: Date.now()});
+    alert("Registration saved successfully!");
+    showStudentMenu();
+  }catch(e){ statusEl.textContent = "Save fail: " + (e.message||e); }
+}
+async function saveUpdate(){
+  const d = readForm();
+  const err = validate(d);
+  const statusEl = document.getElementById("formstatus");
+  if(err){ statusEl.textContent = err; return; }
+  if(!db || !editingId){ statusEl.textContent = "Update fail."; return; }
+  try{
+    await db.collection("students").doc(editingId).update(d);
+    alert("Details updated successfully!");
+    showStudentMenu();
+  }catch(e){ statusEl.textContent = "Update fail: " + (e.message||e); }
+}
+
+// ---------------- UPDATE SEARCH ----------------
+function showUpdateSearch(){
+  render(`
+    ${topbar("Find Your Registration","showStudentMenu")}
+    <label>Enter your name</label>
+    <input id="searchName" placeholder="Name...">
+    <button class="btn" style="margin-top:12px" onclick="doSearch()">🔍 Search</button>
+    <div id="searchResults"></div>
+  `);
+}
+async function doSearch(){
+  const name = document.getElementById("searchName").value.trim().toLowerCase();
+  const resultsEl = document.getElementById("searchResults");
+  if(!name){ resultsEl.innerHTML = '<p class="status">Name is required.</p>'; return; }
+  if(!dbReady) await initDb();
+  if(!db){ resultsEl.innerHTML = '<p class="status">Data unavailable.</p>'; return; }
+  resultsEl.innerHTML = '<p class="status">Searching...</p>';
+  try{
+    const snap = await db.collection("students").get();
+    const matches = snap.docs.filter(d => (d.data().name||'').toLowerCase().includes(name));
+    if(matches.length===0){ resultsEl.innerHTML = '<p class="empty">No student found.</p>'; return; }
+    resultsEl.innerHTML = matches.map(d=>{
+      const s = d.data();
+      return `<div class="list-item" onclick="openForEdit('${d.id}')">
+        <span>${esc(s.name)} | ${esc(s.year||'')} | Sec ${esc(s.section||'')}</span>
+        <span>➜</span>
+      </div>`;
+    }).join('');
+  }catch(e){ resultsEl.innerHTML = '<p class="status">Error: '+(e.message||e)+'</p>'; }
+}
+async function openForEdit(id){
+  const doc = await db.collection("students").doc(id).get();
+  if(!doc.exists){ alert("Not found"); return; }
+  editingId = id;
+  render(formHtml(doc.data(), true));
+}
+
+// ---------------- TEACHER AUTH ----------------
+let teacherUnlocked = false;
+
+async function showTeacherYears(){
+  if(teacherUnlocked){ renderTeacherYears(); return; }
+  render(`<p class="status">Loading...</p>`);
+  if(!dbReady) await initDb();
+  if(!db){ render(`${topbar("Teacher Portal","showHome")}<p class="empty">Data unavailable.</p>`); return; }
+  try{
+    const doc = await db.collection("config").doc("teacher").get();
+    if(doc.exists && doc.data().password){
+      showTeacherLogin();
+    }else{
+      showTeacherSignup();
+    }
+  }catch(e){
+    render(`${topbar("Teacher Portal","showHome")}<p class="status">Error: ${esc(e.message||String(e))}</p>`);
+  }
+}
+
+function showTeacherSignup(){
+  render(`
+    ${topbar("Teacher Sign Up","showHome")}
+    <div class="card">
+      <p class="sub">Set up Teacher access for the first time.</p>
+      <label>Create Username</label>
+      <input id="tp_user" placeholder="Username">
+      <label>Create Password</label>
+      <input id="tp_pass1" type="password" placeholder="Password">
+      <label>Confirm Password</label>
+      <input id="tp_pass2" type="password" placeholder="Confirm Password">
+      <p class="status" id="tpstatus"></p>
+      <button class="btn" onclick="teacherSignup()">✅ Create & Continue</button>
+    </div>
+  `);
+}
+async function teacherSignup(){
+  const u = document.getElementById("tp_user").value.trim();
+  const p1 = document.getElementById("tp_pass1").value;
+  const p2 = document.getElementById("tp_pass2").value;
+  const st = document.getElementById("tpstatus");
+  if(!u){ st.textContent = "Please enter a username."; return; }
+  if(!p1 || p1.length < 4){ st.textContent = "Password should be at least 4 characters."; return; }
+  if(p1 !== p2){ st.textContent = "Passwords do not match."; return; }
+  try{
+    await db.collection("config").doc("teacher").set({username: u, password: p1});
+    teacherUnlocked = true;
+    renderTeacherYears();
+  }catch(e){ st.textContent = "Fail: " + (e.message||e); }
+}
+
+function showTeacherLogin(){
+  render(`
+    ${topbar("Teacher Login","showHome")}
+    <div class="card">
+      <label>Username</label>
+      <input id="tl_user" placeholder="Username">
+      <label>Password</label>
+      <input id="tl_pass" type="password" placeholder="Password">
+      <p class="status" id="tlstatus"></p>
+      <button class="btn" onclick="teacherLogin()">🔓 Login</button>
+    </div>
+  `);
+}
+async function teacherLogin(){
+  const u = document.getElementById("tl_user").value.trim();
+  const p = document.getElementById("tl_pass").value;
+  const st = document.getElementById("tlstatus");
+  try{
+    const doc = await db.collection("config").doc("teacher").get();
+    const data = doc.exists ? doc.data() : {};
+    if(doc.exists && data.username === u && data.password === p){
+      teacherUnlocked = true;
+      renderTeacherYears();
+    }else{
+      st.textContent = "Incorrect username or password.";
+    }
+  }catch(e){ st.textContent = "Fail: " + (e.message||e); }
+}
+
+function renderTeacherYears(){
+  render(`
+    ${topbar("Teacher Portal","showHome")}
+    <p class="sub">Select Year</p>
+    ${YEARS.map(y=>`<button class="btn" onclick="showTeacherSections('${y}')">${y}</button>`).join('')}
+  `);
+}
+function showTeacherSections(year){
+  render(`
+    ${topbar(year,"showTeacherYears")}
+    <p class="sub">Select Section</p>
+    ${SECTIONS.map(s=>`<button class="btn" onclick="showTeacherStudents('${esc(year)}','${s}')">Section ${s}</button>`).join('')}
+  `);
+}
+async function showTeacherStudents(year, section){
+  render(`
+    ${topbar(year+" - Sec "+section, `()=>showTeacherSections('${esc(year)}')`)}
+    <p class="status">Loading...</p>
+  `);
+  if(!dbReady) await initDb();
+  if(!db){ render(`${topbar(year+" - Sec "+section, `()=>showTeacherSections('${esc(year)}')`)}<p class="empty">Data unavailable.</p>`); return; }
+  try{
+    const snap = await db.collection("students").where("year","==",year).where("section","==",section).get();
+    const docs = snap.docs;
+    let body;
+    if(docs.length===0){
+      body = '<p class="empty">No students registered in this section.</p>';
+    }else{
+      body = `<p class="sub">Students: ${docs.length}</p>` + docs.map((d,i)=>{
+        const s = d.data();
+        return `<div class="list-item" onclick="showStudentDetails('${d.id}')">
+          <span>${i+1}. ${esc(s.name)}</span><span>➜</span>
+        </div>`;
+      }).join('');
+    }
+    render(`${topbar(year+" - Sec "+section, `()=>showTeacherSections('${esc(year)}')`)}${body}`);
+  }catch(e){
+    render(`${topbar(year+" - Sec "+section, `()=>showTeacherSections('${esc(year)}')`)}<p class="status">Error: ${esc(e.message||String(e))}</p>`);
+  }
+}
+async function showStudentDetails(id){
+  render(`<p class="status">Loading...</p>`);
+  const doc = await db.collection("students").doc(id).get();
+  if(!doc.exists){ render('<p class="empty">Not found.</p>'); return; }
+  const s = doc.data();
+  render(`
+    ${topbar("Student Details", `()=>showTeacherStudents('${esc(s.year)}','${esc(s.section)}')`)}
+    <div class="card">
+      ${detailRow("Student Name", s.name)}
+      ${detailRow("Branch", s.branch)}
+      ${detailRow("Course", s.course)}
+      ${detailRow("Project Name", s.project)}
+      ${detailRow("Year", s.year)}
+      ${detailRow("Section", s.section)}
+      ${detailRow("Presentation", s.presentation || "Not provided")}
+      ${detailRow("Prototype", s.prototype || "Not provided")}
+    </div>
+  `);
+}
+function detailRow(k,v){
+  return `<div class="detail-row"><span class="k">${esc(k)}</span><span class="v">${esc(v||'')}</span></div>`;
+}
+function esc(str){
+  return String(str==null?'':str).replace(/[&<>"']/g, m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
+}
+
+// init
+showHome();
+</script>
+</body>
+</html>
