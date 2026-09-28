@@ -142,6 +142,8 @@ function formHtml(data, isUpdate){
       <input id="f_course" value="${esc(data.course||'')}">
       <label>Project Name</label>
       <input id="f_project" value="${esc(data.project||'')}">
+      <label>${isUpdate ? 'New Password (leave blank to keep current)' : 'Set a Password (to protect your profile)'}</label>
+      <input id="f_password" type="password" placeholder="Password">
       <label>Presentation</label>
       <textarea id="f_presentation">${esc(data.presentation||'')}</textarea>
       <label>Prototype</label>
@@ -177,24 +179,26 @@ function readForm(){
     branch: document.getElementById("f_branch").value.trim(),
     course: document.getElementById("f_course").value.trim(),
     project: document.getElementById("f_project").value.trim(),
+    password: document.getElementById("f_password").value,
     presentation: document.getElementById("f_presentation").value.trim(),
     prototype: document.getElementById("f_prototype").value.trim(),
     year: document.getElementById("f_year").value,
     section: document.getElementById("f_section").value,
   };
 }
-function validate(d){
+function validate(d, isUpdate){
   if(!d.name) return "Please enter student name.";
   if(!d.branch) return "Please enter branch.";
   if(!d.course) return "Please enter course.";
   if(!d.project) return "Please enter project name.";
+  if(!isUpdate && (!d.password || d.password.length < 4)) return "Please set a password (at least 4 characters).";
   if(!d.year) return "Please select year.";
   if(!d.section) return "Please select section.";
   return null;
 }
 async function saveRegistration(){
   const d = readForm();
-  const err = validate(d);
+  const err = validate(d, false);
   const statusEl = document.getElementById("formstatus");
   if(err){ statusEl.textContent = err; return; }
   if(!dbReady) await initDb();
@@ -207,10 +211,11 @@ async function saveRegistration(){
 }
 async function saveUpdate(){
   const d = readForm();
-  const err = validate(d);
+  const err = validate(d, true);
   const statusEl = document.getElementById("formstatus");
   if(err){ statusEl.textContent = err; return; }
   if(!db || !editingId){ statusEl.textContent = "Update fail."; return; }
+  if(!d.password){ delete d.password; }
   try{
     await db.collection("students").doc(editingId).update(d);
     alert("Details updated successfully!");
@@ -241,18 +246,36 @@ async function doSearch(){
     if(matches.length===0){ resultsEl.innerHTML = '<p class="empty">No student found.</p>'; return; }
     resultsEl.innerHTML = matches.map(d=>{
       const s = d.data();
-      return `<div class="list-item" onclick="openForEdit('${d.id}')">
+      return `<div class="list-item" onclick="showPasswordCheck('${d.id}')">
         <span>${esc(s.name)} | ${esc(s.year||'')} | Sec ${esc(s.section||'')}</span>
         <span>➜</span>
       </div>`;
     }).join('');
   }catch(e){ resultsEl.innerHTML = '<p class="status">Error: '+(e.message||e)+'</p>'; }
 }
-async function openForEdit(id){
-  const doc = await db.collection("students").doc(id).get();
-  if(!doc.exists){ alert("Not found"); return; }
-  editingId = id;
-  render(formHtml(doc.data(), true));
+function showPasswordCheck(id){
+  render(`
+    ${topbar("Enter Password","showUpdateSearch")}
+    <div class="card">
+      <p class="sub">Enter your profile password to continue.</p>
+      <label>Password</label>
+      <input id="pw_check" type="password" placeholder="Password">
+      <p class="status" id="pwstatus"></p>
+      <button class="btn" onclick="verifyAndOpen('${id}')">🔓 Continue</button>
+    </div>
+  `);
+}
+async function verifyAndOpen(id){
+  const pw = document.getElementById("pw_check").value;
+  const st = document.getElementById("pwstatus");
+  try{
+    const doc = await db.collection("students").doc(id).get();
+    if(!doc.exists){ st.textContent = "Not found."; return; }
+    const data = doc.data();
+    if(data.password !== pw){ st.textContent = "Incorrect password."; return; }
+    editingId = id;
+    render(formHtml(data, true));
+  }catch(e){ st.textContent = "Error: " + (e.message||e); }
 }
 
 // ---------------- TEACHER AUTH ----------------
