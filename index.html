@@ -4,95 +4,60 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Student Project Management</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
 :root{
-  --bg1:#0f1220; --bg2:#1a1d2e; --card:#ffffff; --card2:#f7f7fb;
-  --text:#1a1b25; --muted:#6b6f80;
-  --primary:#6c5ce7; --primary2:#a78bfa; --primary-text:#ffffff;
-  --border:#ecebf3; --danger:#e5484d; --shadow:0 10px 30px rgba(30,20,60,0.10);
+  --bg:#f5f6fa; --card:#ffffff; --text:#1c1e21; --muted:#6b7280;
+  --primary:#4f46e5; --primary-text:#ffffff; --border:#e5e7eb; --danger:#dc2626;
   box-sizing:border-box;
   padding-top:env(safe-area-inset-top,0px);
   padding-bottom:env(safe-area-inset-bottom,0px);
 }
 @media (prefers-color-scheme: dark){
   :root:not([data-theme="light"]){
-    --card:#1b1d2b; --card2:#222435; --text:#f0f0f7; --muted:#9a9db3;
-    --border:#2c2f45; --shadow:0 10px 30px rgba(0,0,0,0.35);
+    --bg:#111318; --card:#1c1f26; --text:#eef0f3; --muted:#9aa1ac;
+    --primary:#818cf8; --primary-text:#111318; --border:#2a2e37;
   }
 }
 :root[data-theme="dark"]{
-  --card:#1b1d2b; --card2:#222435; --text:#f0f0f7; --muted:#9a9db3;
-  --border:#2c2f45; --shadow:0 10px 30px rgba(0,0,0,0.35);
+  --bg:#111318; --card:#1c1f26; --text:#eef0f3; --muted:#9aa1ac;
+  --primary:#818cf8; --primary-text:#111318; --border:#2a2e37;
 }
 *{box-sizing:border-box;}
-html{scroll-padding-top:env(safe-area-inset-top,0px); height:100%;}
+html{scroll-padding-top:env(safe-area-inset-top,0px);}
 body{
-  margin:0; color:var(--text);
-  font-family:'Inter','Poppins',-apple-system,BlinkMacSystemFont,sans-serif;
+  margin:0; background:var(--bg); color:var(--text);
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;
   min-height:100%;
-  background:
-    radial-gradient(circle at 20% 0%, rgba(108,92,231,0.12), transparent 45%),
-    radial-gradient(circle at 90% 100%, rgba(167,139,250,0.10), transparent 45%),
-    var(--card2);
-  background-attachment:fixed;
 }
-@keyframes fadeSlide{
-  from{opacity:0; transform:translateY(10px);}
-  to{opacity:1; transform:translateY(0);}
-}
-.app{max-width:520px; margin:0 auto; padding:28px 18px 44px; animation:fadeSlide 0.35s ease both;}
-h1{font-family:'Poppins',sans-serif; font-size:1.5rem; font-weight:700; margin:8px 0 4px; letter-spacing:-0.01em;}
-.sub{color:var(--muted); margin:0 0 20px; font-size:0.95rem; line-height:1.5;}
-.card{
-  background:var(--card); border:1px solid var(--border); border-radius:22px; padding:20px;
-  margin-bottom:16px; box-shadow:var(--shadow);
-  animation:fadeSlide 0.4s ease both;
-}
+.app{max-width:520px; margin:0 auto; padding:20px 16px 40px;}
+h1{font-size:1.4rem; margin:8px 0 4px;}
+.sub{color:var(--muted); margin:0 0 20px; font-size:0.95rem;}
+.card{background:var(--card); border:1px solid var(--border); border-radius:14px; padding:16px; margin-bottom:14px;}
 .btn{
-  display:block; width:100%; padding:15px; margin:9px 0; border:none; border-radius:16px;
-  background:linear-gradient(135deg, var(--primary), var(--primary2));
-  color:var(--primary-text); font-size:1rem; font-weight:600;
-  cursor:pointer; text-align:center; letter-spacing:0.01em;
-  box-shadow:0 8px 20px rgba(108,92,231,0.28);
-  transition:transform 0.18s cubic-bezier(.2,.8,.2,1), box-shadow 0.18s ease, opacity 0.18s ease;
+  display:block; width:100%; padding:14px; margin:8px 0; border:none; border-radius:12px;
+  background:var(--primary); color:var(--primary-text); font-size:1rem; font-weight:600;
+  cursor:pointer; text-align:center;
 }
-.btn:active{transform:scale(0.96); box-shadow:0 4px 12px rgba(108,92,231,0.25);}
-.btn.secondary{
-  background:var(--card); color:var(--text); border:1px solid var(--border);
-  font-weight:500; box-shadow:0 2px 8px rgba(0,0,0,0.05);
-}
-.btn.link{background:transparent; color:var(--primary); font-weight:600; box-shadow:none; padding:8px; margin:4px 0;}
-.btn.danger{background:linear-gradient(135deg, var(--danger), #ff7676); box-shadow:0 8px 20px rgba(229,72,77,0.25);}
+.btn.secondary{background:transparent; color:var(--text); border:1px solid var(--border); font-weight:500;}
+.btn.danger{background:var(--danger); color:#fff;}
 .grid2{display:grid; grid-template-columns:1fr 1fr; gap:10px;}
-label{display:block; font-size:0.82rem; font-weight:600; margin:14px 0 5px; color:var(--muted); letter-spacing:0.01em;}
+label{display:block; font-size:0.85rem; font-weight:600; margin:12px 0 4px; color:var(--muted);}
 input,select,textarea{
-  width:100%; padding:13px; border-radius:14px; border:1.5px solid var(--border);
-  background:var(--card2); color:var(--text); font-size:1rem; font-family:inherit;
-  transition:border-color 0.2s ease, box-shadow 0.2s ease;
+  width:100%; padding:11px; border-radius:10px; border:1px solid var(--border);
+  background:var(--bg); color:var(--text); font-size:1rem;
 }
-input:focus,select:focus,textarea:focus{
-  outline:none; border-color:var(--primary); box-shadow:0 0 0 4px rgba(108,92,231,0.14);
-}
-::placeholder{color:var(--muted); opacity:0.7;}
 textarea{min-height:70px; resize:vertical;}
 .list-item{
   display:flex; justify-content:space-between; align-items:center;
-  padding:15px; border:1px solid var(--border); border-radius:16px; margin-bottom:9px;
-  background:var(--card); cursor:pointer; box-shadow:0 4px 14px rgba(30,20,60,0.06);
-  transition:transform 0.15s ease, box-shadow 0.15s ease;
-  animation:fadeSlide 0.4s ease both;
+  padding:12px; border:1px solid var(--border); border-radius:10px; margin-bottom:8px; background:var(--bg); cursor:pointer;
 }
-.list-item:active{transform:scale(0.98); box-shadow:0 2px 8px rgba(30,20,60,0.08);}
-.topbar{display:flex; align-items:center; gap:10px; margin-bottom:18px;}
-.topbar .btn{width:auto; margin:0; padding:9px 15px; font-size:0.9rem;}
-.detail-row{display:flex; flex-direction:column; margin-bottom:14px; padding-bottom:14px; border-bottom:1px solid var(--border);}
-.detail-row:last-child{border-bottom:none; margin-bottom:0; padding-bottom:0;}
-.detail-row .k{font-size:0.78rem; color:var(--muted); font-weight:600; text-transform:uppercase; letter-spacing:0.04em;}
-.detail-row .v{font-size:1.02rem; margin-top:4px; white-space:pre-wrap;}
-.empty{text-align:center; color:var(--muted); padding:34px 0;}
+.list-item:active{opacity:0.7;}
+.topbar{display:flex; align-items:center; gap:10px; margin-bottom:16px;}
+.topbar .btn{width:auto; margin:0; padding:8px 14px; font-size:0.9rem;}
+.detail-row{display:flex; flex-direction:column; margin-bottom:12px;}
+.detail-row .k{font-size:0.8rem; color:var(--muted); font-weight:600;}
+.detail-row .v{font-size:1rem; margin-top:2px; white-space:pre-wrap;}
+.empty{text-align:center; color:var(--muted); padding:30px 0;}
 .status{font-size:0.85rem; color:var(--muted); margin-bottom:10px; min-height:18px;}
 </style>
 </head>
@@ -128,12 +93,7 @@ async function initDb(){
   dbReady = true;
 }
 
-function render(html){
-  app.innerHTML = html;
-  app.style.animation = 'none';
-  void app.offsetWidth;
-  app.style.animation = '';
-}
+function render(html){ app.innerHTML = html; }
 
 function topbar(title, backFn){
   return `<div class="topbar">
@@ -182,10 +142,6 @@ function formHtml(data, isUpdate){
       <input id="f_course" value="${esc(data.course||'')}">
       <label>Project Name</label>
       <input id="f_project" value="${esc(data.project||'')}">
-      <label>${isUpdate ? 'New Password (leave blank to keep current)' : 'Set a Password (to protect your profile)'}</label>
-      <input id="f_password" type="password" placeholder="Password">
-      <label>Security Answer (used if you forget your password)</label>
-      <input id="f_secret" placeholder="e.g. your pet's name" value="${esc(data.secretAnswer||'')}">
       <label>Presentation</label>
       <textarea id="f_presentation">${esc(data.presentation||'')}</textarea>
       <label>Prototype</label>
@@ -221,45 +177,40 @@ function readForm(){
     branch: document.getElementById("f_branch").value.trim(),
     course: document.getElementById("f_course").value.trim(),
     project: document.getElementById("f_project").value.trim(),
-    password: document.getElementById("f_password").value,
-    secretAnswer: document.getElementById("f_secret").value.trim(),
     presentation: document.getElementById("f_presentation").value.trim(),
     prototype: document.getElementById("f_prototype").value.trim(),
     year: document.getElementById("f_year").value,
     section: document.getElementById("f_section").value,
   };
 }
-function validate(d, isUpdate){
+function validate(d){
   if(!d.name) return "Please enter student name.";
   if(!d.branch) return "Please enter branch.";
   if(!d.course) return "Please enter course.";
   if(!d.project) return "Please enter project name.";
-  if(!isUpdate && (!d.password || d.password.length < 4)) return "Please set a password (at least 4 characters).";
-  if(!isUpdate && !d.secretAnswer) return "Please set a security answer.";
   if(!d.year) return "Please select year.";
   if(!d.section) return "Please select section.";
   return null;
 }
 async function saveRegistration(){
   const d = readForm();
-  const err = validate(d, false);
+  const err = validate(d);
   const statusEl = document.getElementById("formstatus");
   if(err){ statusEl.textContent = err; return; }
   if(!dbReady) await initDb();
   if(!db){ statusEl.textContent = "Could not save — data storage is unavailable."; return; }
   try{
-    await db.collection("students").add({...d, resetCount: 0, createdAt: Date.now()});
+    await db.collection("students").add({...d, createdAt: Date.now()});
     alert("Registration saved successfully!");
     showStudentMenu();
   }catch(e){ statusEl.textContent = "Save fail: " + (e.message||e); }
 }
 async function saveUpdate(){
   const d = readForm();
-  const err = validate(d, true);
+  const err = validate(d);
   const statusEl = document.getElementById("formstatus");
   if(err){ statusEl.textContent = err; return; }
   if(!db || !editingId){ statusEl.textContent = "Update fail."; return; }
-  if(!d.password){ delete d.password; } // keep existing password if left blank
   try{
     await db.collection("students").doc(editingId).update(d);
     alert("Details updated successfully!");
@@ -274,7 +225,6 @@ function showUpdateSearch(){
     <label>Enter your name</label>
     <input id="searchName" placeholder="Name...">
     <button class="btn" style="margin-top:12px" onclick="doSearch()">🔍 Search</button>
-    <button class="btn link" onclick="showForgotSearch()">Forgot Password?</button>
     <div id="searchResults"></div>
   `);
 }
@@ -291,130 +241,18 @@ async function doSearch(){
     if(matches.length===0){ resultsEl.innerHTML = '<p class="empty">No student found.</p>'; return; }
     resultsEl.innerHTML = matches.map(d=>{
       const s = d.data();
-      return `<div class="list-item" onclick="showPasswordCheck('${d.id}')">
+      return `<div class="list-item" onclick="openForEdit('${d.id}')">
         <span>${esc(s.name)} | ${esc(s.year||'')} | Sec ${esc(s.section||'')}</span>
         <span>➜</span>
       </div>`;
     }).join('');
   }catch(e){ resultsEl.innerHTML = '<p class="status">Error: '+(e.message||e)+'</p>'; }
 }
-function showPasswordCheck(id){
-  render(`
-    ${topbar("Enter Password","showUpdateSearch")}
-    <div class="card">
-      <p class="sub">Enter your profile password to continue.</p>
-      <label>Password</label>
-      <input id="pw_check" type="password" placeholder="Password">
-      <p class="status" id="pwstatus"></p>
-      <button class="btn" onclick="verifyAndOpen('${id}')">🔓 Continue</button>
-    </div>
-  `);
-}
-async function verifyAndOpen(id){
-  const pw = document.getElementById("pw_check").value;
-  const st = document.getElementById("pwstatus");
-  try{
-    const doc = await db.collection("students").doc(id).get();
-    if(!doc.exists){ st.textContent = "Not found."; return; }
-    const data = doc.data();
-    if(data.password !== pw){ st.textContent = "Incorrect password."; return; }
-    editingId = id;
-    render(formHtml(data, true));
-  }catch(e){ st.textContent = "Error: " + (e.message||e); }
-}
-
-// ---------------- FORGOT PASSWORD ----------------
-function showForgotSearch(){
-  render(`
-    ${topbar("Forgot Password","showUpdateSearch")}
-    <label>Enter your name</label>
-    <input id="fp_name" placeholder="Name...">
-    <button class="btn" style="margin-top:12px" onclick="fpSearch()">🔍 Search</button>
-    <div id="fpResults"></div>
-  `);
-}
-async function fpSearch(){
-  const name = document.getElementById("fp_name").value.trim().toLowerCase();
-  const resultsEl = document.getElementById("fpResults");
-  if(!name){ resultsEl.innerHTML = '<p class="status">Name is required.</p>'; return; }
-  if(!dbReady) await initDb();
-  if(!db){ resultsEl.innerHTML = '<p class="status">Data unavailable.</p>'; return; }
-  resultsEl.innerHTML = '<p class="status">Searching...</p>';
-  try{
-    const snap = await db.collection("students").get();
-    const matches = snap.docs.filter(d => (d.data().name||'').toLowerCase().includes(name));
-    if(matches.length===0){ resultsEl.innerHTML = '<p class="empty">No student found.</p>'; return; }
-    resultsEl.innerHTML = matches.map(d=>{
-      const s = d.data();
-      return `<div class="list-item" onclick="showSecretCheck('${d.id}')">
-        <span>${esc(s.name)} | ${esc(s.year||'')} | Sec ${esc(s.section||'')}</span>
-        <span>➜</span>
-      </div>`;
-    }).join('');
-  }catch(e){ resultsEl.innerHTML = '<p class="status">Error: '+(e.message||e)+'</p>'; }
-}
-async function showSecretCheck(id){
-  render(`<p class="status">Loading...</p>`);
+async function openForEdit(id){
   const doc = await db.collection("students").doc(id).get();
-  if(!doc.exists){ render('<p class="empty">Not found.</p>'); return; }
-  const data = doc.data();
-  const used = data.resetCount || 0;
-  if(used >= 2){
-    render(`
-      ${topbar("Forgot Password","showUpdateSearch")}
-      <div class="card">
-        <p class="sub">You have already reset your password 2 times. Please contact your teacher to reset it further.</p>
-      </div>
-    `);
-    return;
-  }
-  render(`
-    ${topbar("Forgot Password","showUpdateSearch")}
-    <div class="card">
-      <p class="sub">Answer your security question to reset your password.</p>
-      <p class="sub">Resets used: ${used} / 2</p>
-      <label>Security Answer</label>
-      <input id="fp_answer" placeholder="Your answer">
-      <p class="status" id="fpstatus"></p>
-      <button class="btn" onclick="fpVerify('${id}')">Verify</button>
-    </div>
-  `);
-}
-async function fpVerify(id){
-  const ans = document.getElementById("fp_answer").value.trim().toLowerCase();
-  const st = document.getElementById("fpstatus");
-  try{
-    const doc = await db.collection("students").doc(id).get();
-    if(!doc.exists){ st.textContent = "Not found."; return; }
-    const data = doc.data();
-    if((data.secretAnswer||'').trim().toLowerCase() !== ans){ st.textContent = "Incorrect answer."; return; }
-    render(`
-      ${topbar("Set New Password","showUpdateSearch")}
-      <div class="card">
-        <label>New Password</label>
-        <input id="fp_newpass" type="password" placeholder="New Password">
-        <label>Confirm New Password</label>
-        <input id="fp_newpass2" type="password" placeholder="Confirm New Password">
-        <p class="status" id="fpstatus2"></p>
-        <button class="btn" onclick="fpSetNewPassword('${id}')">💾 Save New Password</button>
-      </div>
-    `);
-  }catch(e){ st.textContent = "Error: " + (e.message||e); }
-}
-async function fpSetNewPassword(id){
-  const p1 = document.getElementById("fp_newpass").value;
-  const p2 = document.getElementById("fp_newpass2").value;
-  const st = document.getElementById("fpstatus2");
-  if(!p1 || p1.length < 4){ st.textContent = "Password should be at least 4 characters."; return; }
-  if(p1 !== p2){ st.textContent = "Passwords do not match."; return; }
-  try{
-    const doc = await db.collection("students").doc(id).get();
-    const used = (doc.exists && doc.data().resetCount) || 0;
-    if(used >= 2){ st.textContent = "Reset limit reached. Contact your teacher."; return; }
-    await db.collection("students").doc(id).update({password: p1, resetCount: used + 1});
-    alert("Password updated successfully!");
-    showStudentMenu();
-  }catch(e){ st.textContent = "Error: " + (e.message||e); }
+  if(!doc.exists){ alert("Not found"); return; }
+  editingId = id;
+  render(formHtml(doc.data(), true));
 }
 
 // ---------------- TEACHER AUTH ----------------
@@ -462,4 +300,109 @@ async function teacherSignup(){
   if(!p1 || p1.length < 4){ st.textContent = "Password should be at least 4 characters."; return; }
   if(p1 !== p2){ st.textContent = "Passwords do not match."; return; }
   try{
-    await db.collection("config").doc("t
+    await db.collection("config").doc("teacher").set({username: u, password: p1});
+    teacherUnlocked = true;
+    renderTeacherYears();
+  }catch(e){ st.textContent = "Fail: " + (e.message||e); }
+}
+
+function showTeacherLogin(){
+  render(`
+    ${topbar("Teacher Login","showHome")}
+    <div class="card">
+      <label>Username</label>
+      <input id="tl_user" placeholder="Username">
+      <label>Password</label>
+      <input id="tl_pass" type="password" placeholder="Password">
+      <p class="status" id="tlstatus"></p>
+      <button class="btn" onclick="teacherLogin()">🔓 Login</button>
+    </div>
+  `);
+}
+async function teacherLogin(){
+  const u = document.getElementById("tl_user").value.trim();
+  const p = document.getElementById("tl_pass").value;
+  const st = document.getElementById("tlstatus");
+  try{
+    const doc = await db.collection("config").doc("teacher").get();
+    const data = doc.exists ? doc.data() : {};
+    if(doc.exists && data.username === u && data.password === p){
+      teacherUnlocked = true;
+      renderTeacherYears();
+    }else{
+      st.textContent = "Incorrect username or password.";
+    }
+  }catch(e){ st.textContent = "Fail: " + (e.message||e); }
+}
+
+function renderTeacherYears(){
+  render(`
+    ${topbar("Teacher Portal","showHome")}
+    <p class="sub">Select Year</p>
+    ${YEARS.map(y=>`<button class="btn" onclick="showTeacherSections('${y}')">${y}</button>`).join('')}
+  `);
+}
+function showTeacherSections(year){
+  render(`
+    ${topbar(year,"showTeacherYears")}
+    <p class="sub">Select Section</p>
+    ${SECTIONS.map(s=>`<button class="btn" onclick="showTeacherStudents('${esc(year)}','${s}')">Section ${s}</button>`).join('')}
+  `);
+}
+async function showTeacherStudents(year, section){
+  render(`
+    ${topbar(year+" - Sec "+section, `()=>showTeacherSections('${esc(year)}')`)}
+    <p class="status">Loading...</p>
+  `);
+  if(!dbReady) await initDb();
+  if(!db){ render(`${topbar(year+" - Sec "+section, `()=>showTeacherSections('${esc(year)}')`)}<p class="empty">Data unavailable.</p>`); return; }
+  try{
+    const snap = await db.collection("students").where("year","==",year).where("section","==",section).get();
+    const docs = snap.docs;
+    let body;
+    if(docs.length===0){
+      body = '<p class="empty">No students registered in this section.</p>';
+    }else{
+      body = `<p class="sub">Students: ${docs.length}</p>` + docs.map((d,i)=>{
+        const s = d.data();
+        return `<div class="list-item" onclick="showStudentDetails('${d.id}')">
+          <span>${i+1}. ${esc(s.name)}</span><span>➜</span>
+        </div>`;
+      }).join('');
+    }
+    render(`${topbar(year+" - Sec "+section, `()=>showTeacherSections('${esc(year)}')`)}${body}`);
+  }catch(e){
+    render(`${topbar(year+" - Sec "+section, `()=>showTeacherSections('${esc(year)}')`)}<p class="status">Error: ${esc(e.message||String(e))}</p>`);
+  }
+}
+async function showStudentDetails(id){
+  render(`<p class="status">Loading...</p>`);
+  const doc = await db.collection("students").doc(id).get();
+  if(!doc.exists){ render('<p class="empty">Not found.</p>'); return; }
+  const s = doc.data();
+  render(`
+    ${topbar("Student Details", `()=>showTeacherStudents('${esc(s.year)}','${esc(s.section)}')`)}
+    <div class="card">
+      ${detailRow("Student Name", s.name)}
+      ${detailRow("Branch", s.branch)}
+      ${detailRow("Course", s.course)}
+      ${detailRow("Project Name", s.project)}
+      ${detailRow("Year", s.year)}
+      ${detailRow("Section", s.section)}
+      ${detailRow("Presentation", s.presentation || "Not provided")}
+      ${detailRow("Prototype", s.prototype || "Not provided")}
+    </div>
+  `);
+}
+function detailRow(k,v){
+  return `<div class="detail-row"><span class="k">${esc(k)}</span><span class="v">${esc(v||'')}</span></div>`;
+}
+function esc(str){
+  return String(str==null?'':str).replace(/[&<>"']/g, m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
+}
+
+// init
+showHome();
+</script>
+</body>
+</html>
