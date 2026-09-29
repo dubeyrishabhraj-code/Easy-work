@@ -1,0 +1,1084 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Student Project Management</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#e9eeff;--o1:#9a8bff;--o2:#ff9ccc;--o3:#63d2ff;--o4:#ffc98f;--text:#0e1233;--muted:rgba(14,18,51,.62);--glass:rgba(255,255,255,.46);--glass2:rgba(255,255,255,.8);--line:rgba(14,18,51,.09);--field:rgba(255,255,255,.65);--sh:0 20px 40px -20px rgba(50,40,160,.42);--off:rgba(80,85,140,.2);--h1:#b06a00;--h2:#f0a020;--danger:#e5484d;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#070819;--o1:#5b3bff;--o2:#c02bd8;--o3:#0a8fd6;--o4:#7a2bd0;--text:#f4f5ff;--muted:rgba(232,234,255,.64);--glass:rgba(255,255,255,.09);--glass2:rgba(26,26,62,.8);--line:rgba(255,255,255,.11);--field:rgba(255,255,255,.08);--sh:0 20px 40px -18px rgba(0,0,0,.75);--off:rgba(255,255,255,.17);--h1:#ffe29a;--h2:#ffab3d}}
+:root[data-theme="dark"]{--bg:#070819;--o1:#5b3bff;--o2:#c02bd8;--o3:#0a8fd6;--o4:#7a2bd0;--text:#f4f5ff;--muted:rgba(232,234,255,.64);--glass:rgba(255,255,255,.09);--glass2:rgba(26,26,62,.8);--line:rgba(255,255,255,.11);--field:rgba(255,255,255,.08);--sh:0 20px 40px -18px rgba(0,0,0,.75);--off:rgba(255,255,255,.17);--h1:#ffe29a;--h2:#ffab3d}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html{height:100%;background:var(--bg);overscroll-behavior:none}
+body{margin:0;min-height:100%;overscroll-behavior:none;color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","Inter",system-ui,sans-serif;font-size:15px;font-weight:500;line-height:1.5;-webkit-font-smoothing:antialiased}
+.bg{position:fixed;inset:0;z-index:-1;background:radial-gradient(46% 34% at 90% 4%,var(--o1),transparent 70%),radial-gradient(50% 36% at 4% 30%,var(--o2),transparent 70%),radial-gradient(58% 40% at 94% 64%,var(--o3),transparent 70%),radial-gradient(62% 40% at 10% 98%,var(--o4),transparent 70%),var(--bg)}
+.app{max-width:520px;margin:0 auto;padding:22px 18px 60px}
+.page{animation:rise .6s cubic-bezier(.22,1,.36,1) both}
+@keyframes rise{from{transform:translateY(16px) scale(.985)}to{transform:none}}
+@keyframes up{from{transform:translateY(100%)}to{transform:none}}
+@keyframes dim{from{background-color:rgba(10,10,40,0)}to{background-color:rgba(10,10,40,.4)}}
+@keyframes pop{50%{transform:scale(1.32)}}
+h1{font-size:2.05rem;font-weight:800;letter-spacing:-.045em;line-height:1.08;margin:6px 0 8px}
+.sub{color:var(--muted);margin:0 0 22px;font-size:.98rem}
+.card,.tile,.creator,.circ,.back,.sheet{position:relative;background:var(--glass);-webkit-backdrop-filter:blur(26px) saturate(190%);backdrop-filter:blur(26px) saturate(190%);box-shadow:var(--sh),inset 0 1px 0 rgba(255,255,255,.55),inset 0 -14px 26px -16px rgba(255,255,255,.3)}
+.card::after,.tile::after,.creator::after,.circ::after,.back::after,.sheet::after{content:"";position:absolute;inset:0;border-radius:inherit;padding:1.2px;pointer-events:none;background:linear-gradient(145deg,rgba(255,255,255,.95),rgba(255,255,255,.1) 32%,rgba(255,255,255,.04) 62%,rgba(255,255,255,.6));-webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);mask-composite:exclude}
+.card{border-radius:28px;padding:20px;margin-bottom:16px}
+.btn{position:relative;overflow:hidden;display:block;width:100%;padding:16px 18px;margin:11px 0;border:0;border-radius:22px;color:#fff;font:inherit;font-weight:700;font-size:1.02rem;letter-spacing:-.01em;cursor:pointer;text-align:center;background:linear-gradient(180deg,#8d8fff,#5558ff 55%,#4142e6);box-shadow:0 14px 26px -10px rgba(85,88,255,.75),inset 0 1px 0 rgba(255,255,255,.6),inset 0 -2px 0 rgba(0,0,0,.14);text-shadow:0 1px 2px rgba(0,0,0,.2);transition:transform .5s cubic-bezier(.34,1.56,.64,1)}
+.btn::before{content:"";position:absolute;left:6%;right:6%;top:0;height:46%;border-radius:0 0 50% 50%/0 0 100% 100%;background:linear-gradient(180deg,rgba(255,255,255,.4),rgba(255,255,255,0));pointer-events:none}
+.btn:active,.tile:active,.back:active,.circ:active,.creator:active{transform:scale(.95);transition-duration:.12s}
+.btn:disabled{opacity:.5;box-shadow:none}
+.btn.secondary{color:var(--text);text-shadow:none;background:var(--glass);border:1px solid rgba(255,255,255,.55);box-shadow:0 8px 20px -14px rgba(50,40,160,.5),inset 0 1px 0 rgba(255,255,255,.6)}
+.btn.secondary::before{display:none}
+.btn.link{background:none;border:0;color:var(--text);box-shadow:none;padding:8px;margin:4px 0;text-shadow:none}
+.btn.link::before{display:none}
+.btn.danger{background:linear-gradient(180deg,#ff8a7a,#e5484d 60%,#cf2f44);box-shadow:0 14px 26px -10px rgba(229,72,77,.7),inset 0 1px 0 rgba(255,255,255,.55)}
+:focus-visible{outline:3px solid rgba(110,110,255,.65);outline-offset:2px}
+.hd{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;margin-bottom:28px}
+.circ{width:46px;height:46px;flex:none;border:0;border-radius:50%;display:grid;place-items:center;color:var(--text);font:italic 700 1.25rem Georgia,serif;cursor:pointer;transition:transform .5s cubic-bezier(.34,1.56,.64,1)}
+.creator{border:0;text-align:right;color:var(--text);font:inherit;padding:9px 17px 10px;border-radius:24px;cursor:pointer;line-height:1.25;transition:transform .5s cubic-bezier(.34,1.56,.64,1)}
+.creator small{display:block;font-size:.7rem;font-weight:600;color:var(--muted)}
+.creator b{font-size:1rem}
+.hl,.creator b{font-weight:800;letter-spacing:-.02em;background:linear-gradient(120deg,var(--h1),var(--h2));-webkit-background-clip:text;background-clip:text;color:transparent}
+.rt{display:flex;justify-content:flex-end;align-items:center;gap:5px;margin-top:2px;font-size:.74rem;font-weight:700;color:var(--muted)}
+.gs{font-style:normal;font-size:.9rem;color:#f5a524}
+.logo{width:62px;height:62px;border-radius:21px;display:grid;place-items:center;font-size:1.9rem;margin-bottom:18px;background:radial-gradient(circle at 30% 20%,rgba(255,255,255,.7),transparent 55%),linear-gradient(145deg,#8d8fff,#5558ff);box-shadow:0 16px 30px -10px rgba(85,88,255,.7),inset 0 1px 0 rgba(255,255,255,.7)}
+.tile{display:flex;align-items:center;gap:15px;width:100%;padding:15px;margin:13px 0;border:0;border-radius:30px;text-align:left;color:var(--text);font:inherit;cursor:pointer;transition:transform .5s cubic-bezier(.34,1.56,.64,1)}
+.tile .tx{flex:1;display:flex;flex-direction:column}
+.tile b{font-size:1.1rem;font-weight:800;letter-spacing:-.025em}
+.tile small{color:var(--muted);font-size:.84rem;line-height:1.35}
+.chip{flex:none;width:56px;height:56px;border-radius:19px;display:grid;place-items:center;font-size:1.7rem;text-shadow:0 3px 6px rgba(0,0,0,.28);background:radial-gradient(circle at 30% 18%,rgba(255,255,255,.8),transparent 55%),linear-gradient(145deg,var(--c1,#8d9bff),var(--c2,#5b5bff));box-shadow:0 10px 20px -8px var(--c2,#5b5bff),inset 0 1px 0 rgba(255,255,255,.75),inset 0 -6px 10px rgba(0,0,0,.08)}
+.chev{font-style:normal;font-size:1.8rem;line-height:1;color:var(--muted);padding-right:4px}
+.topbar{display:flex;align-items:center;gap:12px;margin-bottom:22px}
+.tt{font-size:1.3rem;margin:0}
+.back{flex:none;width:44px;height:44px;border:0;border-radius:50%;display:grid;place-items:center;color:var(--text);cursor:pointer;transition:transform .5s cubic-bezier(.34,1.56,.64,1)}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+label{display:block;font-size:.8rem;font-weight:700;margin:14px 0 6px;color:var(--muted)}
+input,select,textarea{width:100%;padding:14px 15px;border-radius:18px;border:1px solid rgba(255,255,255,.5);background:var(--field);color:var(--text);font:inherit;font-size:16px;box-shadow:inset 0 2px 5px rgba(20,20,80,.06);transition:border-color .2s,box-shadow .25s}
+input:focus,select:focus,textarea:focus{outline:0;border-color:#7b7dff;box-shadow:0 0 0 4px rgba(110,110,255,.22)}
+::placeholder{color:var(--muted);opacity:.7}
+textarea{min-height:84px;resize:vertical}
+.list-item{display:flex;justify-content:space-between;align-items:center;padding:16px 18px;margin-bottom:10px;border-radius:22px;cursor:pointer;font-weight:600;background:var(--glass);border:1px solid rgba(255,255,255,.5);box-shadow:0 8px 20px -14px rgba(50,40,160,.5),inset 0 1px 0 rgba(255,255,255,.6);transition:transform .5s cubic-bezier(.34,1.56,.64,1)}
+.list-item:active{transform:scale(.96);transition-duration:.12s}
+.detail-row{display:flex;flex-direction:column;padding-bottom:14px;margin-bottom:14px;border-bottom:1px solid var(--line)}
+.detail-row:last-child{border:0;margin:0;padding:0}
+.detail-row .k{font-size:.8rem;font-weight:600;color:var(--muted)}
+.detail-row .v{margin-top:3px;font-size:1.02rem;font-weight:600;white-space:pre-wrap}
+.empty{text-align:center;color:var(--muted);padding:34px 0}
+.status{font-size:.85rem;color:var(--muted);min-height:18px;margin:0 0 10px}
+.overlay{position:fixed;inset:0;z-index:60;display:flex;align-items:flex-end;justify-content:center;background:rgba(10,10,40,.4);-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);touch-action:none;animation:dim .3s ease both}
+.sheet{width:100%;max-width:520px;max-height:88vh;max-height:88dvh;display:flex;flex-direction:column;background:var(--glass2);border-radius:34px 34px 0 0;animation:up .55s cubic-bezier(.22,1,.36,1) both}
+.grab{flex:none;width:40px;height:5px;border-radius:9px;background:var(--off);margin:10px auto 4px}
+.sheet-body{flex:1;min-height:0;overflow-y:auto;overscroll-behavior:contain;-webkit-overflow-scrolling:touch;touch-action:pan-y;padding:10px 20px 8px}
+.sheet-foot{flex:none;padding:10px 20px calc(16px + env(safe-area-inset-bottom,0px))}
+.sheet h2{font-size:1.5rem;font-weight:800;letter-spacing:-.035em;margin:4px 0 2px}
+.rate{text-align:center;padding:6px 0 4px}
+.stars{display:flex;justify-content:center;gap:2px;margin:14px 0 6px}
+.star{background:none;border:0;padding:3px;cursor:pointer;transition:transform .45s cubic-bezier(.34,1.56,.64,1)}
+.star svg{display:block;width:46px;height:46px;fill:var(--off);transition:fill .2s}
+.star.on svg{fill:url(#gold);filter:drop-shadow(0 6px 10px rgba(255,159,28,.5))}
+.star.pop{animation:pop .5s cubic-bezier(.34,1.56,.64,1)}
+.star:active{transform:scale(1.2)}
+#mood{font-weight:700;min-height:26px;margin-bottom:8px}
+.info-item{display:flex;gap:13px;padding:15px 0;border-bottom:1px solid var(--line)}
+.info-item:last-child{border:0}
+.info-item .chip{width:42px;height:42px;border-radius:14px;font-size:1.2rem}
+.info-item .t{font-weight:800;font-size:.98rem;letter-spacing:-.01em;margin-bottom:2px}
+.info-item .d{font-size:.88rem;color:var(--muted);line-height:1.6}
+@media (prefers-reduced-motion:reduce){*{animation-duration:.01ms!important;transition-duration:.01ms!important}}
+</style>
+</head>
+<body>
+<div class="bg"></div>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs><linearGradient id="gold" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ffe38f"/><stop offset="1" stop-color="#ff9f1c"/></linearGradient></defs></svg>
+<div class="app" id="app"></div>
+
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+<script>
+const firebaseConfig = {
+  apiKey: "AIzaSyBhXv0TVBAuOk-XLsG0g1PjaUYwmUmaThs",
+  authDomain: "rishabh-works-kit.firebaseapp.com",
+  projectId: "rishabh-works-kit",
+  storageBucket: "rishabh-works-kit.firebasestorage.app",
+  messagingSenderId: "219975181347",
+  appId: "1:219975181347:web:e1ab2d0167c2a650303d96",
+  measurementId: "G-G5DS6BP0FK"
+};
+
+let db = null;
+let dbReady = false;
+const YEARS = ["1st Year","2nd Year","3rd Year","4th Year"];
+const SECTIONS = ["A","B","C","D"];
+let editingId = null;
+
+const app = document.getElementById("app");
+
+async function initDb(){
+  try{
+    if(!firebase.apps.length){ firebase.initializeApp(firebaseConfig); }
+    db = firebase.firestore();
+  }catch(e){ db = null; }
+  dbReady = true;
+}
+
+function render(html){
+  const infoBtn = document.getElementById('infoBtn');
+  if(infoBtn) infoBtn.remove();
+  app.innerHTML = '<div class="page">'+html+'</div>'; window.scrollTo(0,0);
+  app.style.animation = 'none';
+  void app.offsetWidth;
+  app.style.animation = '';
+}
+
+// ---------------- RUBBER-BAND (spring physics) ----------------
+(function(){
+  if(matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  const A = document.getElementById('app'), MAX = 130, K = MAX/.55, se = () => document.scrollingElement || document.documentElement;
+  let sx=0, sy=0, lx=0, ly=0, axis='', dir=0, raw=0, rawX=0, ox=0, oy=0, vx=0, vy=0, raf=0, ign=true;
+  const rub = v => MAX*v/(v+K), inv = o => K*o/Math.max(MAX-o,1);
+  const atTop = () => { const t = se().scrollTop; return t <= 0 && t > -1; };
+  const atBot = () => { const e = se(), m = e.scrollHeight - e.clientHeight; return e.scrollTop >= m-1 && e.scrollTop < m+1; };
+  function paint(){ A.style.transform = `translate3d(${ox}px,${oy}px,0) scale(${1+Math.abs(ox)/1400},${1+Math.max(0,oy*dir)/1000})`; }
+  function reset(){ ox=oy=vx=vy=0; dir=0; A.style.transform=''; A.style.transformOrigin=''; A.style.willChange=''; }
+  function spring(){
+    cancelAnimationFrame(raf); let t0 = performance.now();
+    const step = t => {
+      const dt = Math.min(.032,(t-t0)/1000); t0 = t;
+      vy += (-240*oy - 14*vy)*dt; oy += vy*dt;
+      vx += (-240*ox - 14*vx)*dt; ox += vx*dt;
+      if(Math.abs(oy)+Math.abs(ox) < .2 && Math.abs(vy)+Math.abs(vx) < 4){ reset(); return; }
+      paint(); raf = requestAnimationFrame(step);
+    };
+    raf = requestAnimationFrame(step);
+  }
+  addEventListener('touchstart', e => {
+    ign = e.touches.length > 1 || !!(e.target.closest && e.target.closest('input,select,textarea,.overlay'));
+    if(ign) return;
+    const t = e.touches[0]; cancelAnimationFrame(raf);
+    sx = lx = t.clientX; sy = ly = t.clientY; axis = '';
+    raw = oy ? inv(Math.abs(oy)) : 0; rawX = ox ? Math.sign(ox)*inv(Math.abs(ox)/.35) : 0;
+    A.style.willChange = 'transform';
+  }, {passive:true});
+  addEventListener('touchmove', e => {
+    if(ign) return;
+    const t = e.touches[0], dy = t.clientY-ly, dx = t.clientX-lx; lx = t.clientX; ly = t.clientY;
+    if(!axis){
+      const ax = Math.abs(t.clientX-sx), ay = Math.abs(t.clientY-sy);
+      if(ax < 6 && ay < 6) return;
+      axis = ax > ay ? 'x' : 'y';
+    }
+    if(axis === 'y'){
+      if(raw <= 0){
+        if(dy > 0 && atTop()) dir = 1; else if(dy < 0 && atBot()) dir = -1; else return;
+        raw = 0; A.style.transformOrigin = dir > 0 ? '50% 0' : '50% 100%';
+      }
+      raw += dy*dir;
+      if(raw <= 0){ raw = 0; oy = 0; paint(); return; }
+      oy = dir*rub(raw);
+      if(e.cancelable) e.preventDefault();
+      paint();
+    }else{
+      rawX += dx; ox = Math.sign(rawX)*rub(Math.abs(rawX))*.35; paint();
+    }
+  }, {passive:false});
+  const end = () => { if(ox || oy) spring(); else reset(); };
+  addEventListener('touchend', end, {passive:true});
+  addEventListener('touchcancel', end, {passive:true});
+})();
+
+function topbar(title, backFn){
+  return `<div class="topbar">
+    <button class="back" aria-label="Back" onclick="(${backFn})()"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M15 5l-7 7 7 7"/></svg></button>
+    <h1 class="tt">${title}</h1>
+  </div>`;
+}
+function tile(icon, title, text, fn, c1, c2){
+  return `<button class="tile" onclick="${fn}"><span class="chip" style="--c1:${c1};--c2:${c2}">${icon}</span><span class="tx"><b>${title}</b><small>${text}</small></span><i class="chev">›</i></button>`;
+}
+// ---------------- HOME ----------------
+function showHome(){
+  render(`
+    <div class="hd">
+      <button class="circ" aria-label="About this app" onclick="showInfoSheet()">i</button>
+      <button class="creator" aria-label="Rate this app" onclick="showRateSheet()">
+        <small>Made by</small><b>Rishabh Raj Dubey</b>
+        <span class="rt"><i class="gs">★</i><span id="miniAvg">Tap to rate</span></span>
+      </button>
+    </div>
+    <div class="logo">🎓</div>
+    <h1>Student Project<br>Management</h1>
+    <p class="sub">Study material and projects, all in one place.</p>
+    ${tile('📚','Academic','Notes, important questions and mock tests','showAcademicHome()','#8fd0ff','#4a6bff')}
+    ${tile('🚀','Project','Register, update and review projects','showProjectHome()','#c4a3ff','#7b4dff')}
+  `);
+  loadRating();
+}
+function showHomeInfoButton(){}
+function removeHomeInfoButton(){}
+
+// ---------------- PROJECT (Student/Teacher) ----------------
+function showProjectHome(){
+  render(`
+    ${topbar("Project","showHome")}
+    <p class="sub">Are you a Student or Teacher?</p>
+    ${tile('🎓','Student','Register or update your project','showStudentMenu()','#7cf0dc','#2f8cff')}
+    ${tile('🧑‍🏫','Teacher','Browse students by year and section','showTeacherYears()','#ffc46b','#ff5f8f')}
+    <p class="status" id="dbstatus"></p>
+  `);
+  checkDbStatus();
+}
+async function checkDbStatus(){
+  if(!dbReady) await initDb();
+  const el = document.getElementById("dbstatus");
+  if(el) el.textContent = db ? "" : "Could not connect to storage. Check your internet connection.";
+}
+
+// ---------------- ACADEMIC (Study Material) ----------------
+function showAcademicHome(){ showStudyHome(); }
+
+// ---------------- STUDY MATERIAL ----------------
+const BRANCHES = ["CSE","IT"];
+const SEMESTERS_BY_YEAR = {
+  "1st Year": ["Semester 1","Semester 2"],
+  "2nd Year": ["Semester 3","Semester 4"],
+  "3rd Year": ["Semester 5","Semester 6"],
+  "4th Year": ["Semester 7","Semester 8"],
+};
+// First Year syllabus (common to all branches except AG & BT), AKTU 2022-23 scheme.
+// CSE & IT group: Sem1 = Chemistry+Electrical+Programming+Env; Sem2 = Physics+Electronics+Mechanical+Soft Skills.
+const SUBJECT_DATA = {
+  "Engineering Chemistry": {
+    notes: "Unit 1: Atomic & molecular structure; Chemistry of advanced materials — liquid crystals, graphite & fullerenes, nanomaterials, CNTs; Green Chemistry (12 principles).\nUnit 2: Spectroscopic techniques (UV, IR, NMR); Stereochemistry — optical & geometrical isomerism, chiral drugs.\nUnit 3: Electrochemistry & batteries (primary/secondary cells); Corrosion — types, causes, prevention; Cement manufacturing.\nUnit 4: Water technology — hardness, boiler troubles, softening (Lime-Soda, Zeolite, Ion Exchange, RO); Fuels & combustion, calorific value.\nUnit 5: Polymers — classification, polymerization, blends & composites; Organometallic compounds.",
+    questions: "1. Explain the classification and applications of liquid crystals.\n2. Discuss the 12 principles of green chemistry.\n3. Differentiate between optical and geometrical isomerism.\n4. Explain the working of a lead-acid battery.\n5. What are the causes and prevention methods of corrosion?\n6. Explain the Lime-Soda process for water softening.\n7. Define calorific value and explain its determination using a bomb calorimeter.\n8. Differentiate between thermosetting and thermoplastic polymers.\n9. Explain the manufacturing process of cement.\n10. What is the significance of NMR spectroscopy?",
+    mockTest: [
+      {q:"Which of the following is NOT a type of hardness in water?", options:["Temporary","Permanent","Carbonate","Optical"], correct:3},
+      {q:"Lead-acid battery is an example of:", options:["Primary cell","Secondary cell","Fuel cell","Dry cell"], correct:1},
+      {q:"Which technique uses radio waves to determine molecular structure?", options:["UV","IR","NMR","Visible spectroscopy"], correct:2},
+      {q:"CNT stands for:", options:["Carbon Nano Tube","Central Nano Technology","Chemical Nitrogen Test","Carbon Nitrogen Tube"], correct:0},
+      {q:"Which process uses resin for water softening?", options:["Lime-Soda","Zeolite","Ion Exchange","All of these"], correct:3},
+      {q:"Teflon is an example of:", options:["Thermosetting polymer","Thermoplastic polymer","Elastomer","Natural polymer"], correct:1},
+      {q:"The unit of calorific value is:", options:["Joule","Calorie","kcal/kg","Watt"], correct:2},
+      {q:"Which of these is a secondary cell?", options:["Dry cell","Lead-acid battery","Zinc-carbon cell","Mercury cell"], correct:1},
+      {q:"Green chemistry mainly focuses on:", options:["Increasing cost","Reducing hazardous substances","Using more energy","Increasing waste"], correct:1},
+      {q:"POP stands for:", options:["Plaster of Paris","Polymer of Plastic","Poly Organic Product","Phase of Precipitation"], correct:0},
+    ]
+  },
+  "Engineering Mathematics-I": {
+    notes: "Unit 1: Matrices — symmetric/skew-symmetric/orthogonal & complex matrices, rank via elementary transformations, Rank-Nullity theorem, Cayley-Hamilton theorem, eigen values/vectors, diagonalisation.\nUnit 2: Differential Calculus-I — limits, continuity, differentiability, Rolle's theorem, Lagrange's & Cauchy's mean value theorems, successive differentiation, Leibnitz theorem, envelope/involutes/evolutes, curve tracing.\nUnit 3: Differential Calculus-II — partial & total derivatives, Euler's theorem, Taylor's & Maclaurin's series, maxima-minima of several variables, Lagrange's multipliers, Jacobians, error approximation.\nUnit 4: Multivariable Calculus-I — double/triple integrals, change of order/variables, areas & volumes, centre of mass & gravity.\nUnit 5: Vector Calculus — gradient, curl, divergence, directional derivatives, tangent/normal planes, line/surface/volume integrals, Gauss/Green/Stoke's theorem.",
+    questions: "1. State and prove Cayley-Hamilton theorem.\n2. Find eigen values and eigen vectors of a given matrix and diagonalise it.\n3. State and verify Rolle's theorem and Lagrange's mean value theorem with an example.\n4. State Euler's theorem for homogeneous functions.\n5. Find maxima and minima of a function of two variables.\n6. Evaluate a double integral by changing the order of integration.\n7. Find the centre of gravity of a given lamina using double integration.\n8. Prove Gauss Divergence theorem.\n9. Explain the concept of Jacobians with an example.\n10. State Stoke's theorem and give its application.",
+    mockTest: [
+      {q:"A matrix whose transpose equals its conjugate is called:", options:["Symmetric","Hermitian","Orthogonal","Skew-symmetric"], correct:1},
+      {q:"The rank of a matrix is determined by:", options:["Number of rows","Number of non-zero rows in echelon form","Number of columns","Determinant value only"], correct:1},
+      {q:"Rolle's theorem requires the function to be equal at:", options:["Two interior points","The endpoints of the interval","The midpoint only","No specific points"], correct:1},
+      {q:"Euler's theorem is applied to:", options:["Homogeneous functions","Linear equations","Matrices","Vectors"], correct:0},
+      {q:"Rank-Nullity theorem relates rank of a matrix with:", options:["Its determinant","Nullity (dimension of null space)","Its trace","Its inverse"], correct:1},
+      {q:"Divergence of a vector field is a:", options:["Vector","Scalar","Tensor","Matrix"], correct:1},
+      {q:"Curl of a gradient of a scalar function is always:", options:["1","0","Infinity","Undefined"], correct:1},
+      {q:"Which theorem relates surface integral to volume integral?", options:["Green's theorem","Stoke's theorem","Gauss Divergence theorem","Cayley-Hamilton"], correct:2},
+      {q:"Cayley-Hamilton theorem states every square matrix satisfies its own:", options:["Determinant","Characteristic equation","Inverse","Adjoint"], correct:1},
+      {q:"Lagrange's method of multipliers is used for:", options:["Finding roots","Constrained optimization","Solving matrices","Integration"], correct:1},
+    ]
+  },
+  "Fundamentals of Electrical Engineering": {
+    notes: "Unit 1: DC circuits — circuit elements, Kirchhoff's laws, mesh/nodal analysis.\nUnit 2: AC circuits — RLC combinations, power factor, resonance, three-phase circuits (star/delta).\nUnit 3: Transformers — magnetic circuits, equivalent circuit, losses, efficiency, regulation.\nUnit 4: Electrical machines — DC machines, 3-phase induction motor, single-phase induction motor, synchronous machines.\nUnit 5: Electrical installations — SFU, MCB, ELCB, MCCB, earthing, batteries.",
+    questions: "1. State and explain Kirchhoff's Voltage and Current laws.\n2. Derive the expression for resonance frequency in a series RLC circuit.\n3. Explain the working principle of a transformer.\n4. Differentiate between star and delta connections.\n5. Explain the construction and working of a DC generator.\n6. What is slip in an induction motor? Explain its significance.\n7. Explain the working of MCB and ELCB.\n8. Derive the EMF equation of a DC generator.\n9. What are the losses in a transformer? How do they affect efficiency?\n10. Explain the working principle of a synchronous motor.",
+    mockTest: [
+      {q:"Kirchhoff's Current Law is based on conservation of:", options:["Energy","Charge","Momentum","Mass"], correct:1},
+      {q:"At resonance, the impedance of a series RLC circuit is:", options:["Maximum","Minimum","Zero","Infinite"], correct:1},
+      {q:"In a star connection, line voltage is ___ times phase voltage:", options:["1","√2","√3","3"], correct:2},
+      {q:"Transformer works on the principle of:", options:["Self-induction","Mutual induction","Electrostatic induction","Chemical reaction"], correct:1},
+      {q:"MCB stands for:", options:["Miniature Circuit Breaker","Main Circuit Board","Micro Current Breaker","Multi Circuit Breaker"], correct:0},
+      {q:"Slip of an induction motor is zero at:", options:["Full load","No load","Synchronous speed","Starting"], correct:2},
+      {q:"DC generator works on the principle of:", options:["Faraday's law of electromagnetic induction","Ohm's law","Lenz's law only","Coulomb's law"], correct:0},
+      {q:"ELCB is used to protect against:", options:["Overload","Earth leakage/shock","Overvoltage","Short circuit only"], correct:1},
+      {q:"Power factor of a purely resistive circuit is:", options:["0","0.5","1","Infinite"], correct:2},
+      {q:"Three phase induction motors are widely used because they are:", options:["Self-starting","Costly","Require DC supply","Low efficiency"], correct:0},
+    ]
+  },
+  "Programming for Problem Solving": {
+    notes: "Unit 1: Components of computer system, algorithm, flowchart, pseudocode, C program structure, data types, storage classes.\nUnit 2: Operators, expressions, type conversion, conditional branching (if-else, switch).\nUnit 3: Loops (while, do-while, for), arrays, strings, structures, unions.\nUnit 4: Functions, call by value/reference, recursion, searching & sorting (linear, binary, bubble, insertion, selection).\nUnit 5: Pointers, dynamic memory allocation, file handling, preprocessors, macros.",
+    questions: "1. Differentiate between compiler and interpreter.\n2. Write a program to find factorial of a number using recursion.\n3. Explain call by value and call by reference with examples.\n4. Differentiate between linear search and binary search.\n5. Explain the concept of pointers with an example.\n6. What is dynamic memory allocation? Explain malloc() and calloc().\n7. Write an algorithm for bubble sort.\n8. Explain structure and union with differences.\n9. What are storage classes in C? Explain each briefly.\n10. Explain file handling functions in C.",
+    mockTest: [
+      {q:"Which of the following is a loop structure in C?", options:["if-else","switch","for","goto"], correct:2},
+      {q:"Which operator is used for logical AND in C?", options:["&","&&","|","||"], correct:1},
+      {q:"Recursion is:", options:["A function calling another function","A function calling itself","A loop structure","A data type"], correct:1},
+      {q:"Binary search works only on:", options:["Unsorted arrays","Sorted arrays","Linked lists","Strings"], correct:1},
+      {q:"Which function is used for dynamic memory allocation?", options:["malloc()","scanf()","printf()","main()"], correct:0},
+      {q:"A pointer variable stores:", options:["A value","An address","A string","A function"], correct:1},
+      {q:"Which of these is NOT a storage class in C?", options:["auto","extern","static","dynamic"], correct:3},
+      {q:"In call by reference, we pass:", options:["Value of variable","Address of variable","Name of variable","Nothing"], correct:1},
+      {q:"Which sorting algorithm repeatedly swaps adjacent elements if in wrong order?", options:["Selection sort","Bubble sort","Binary search","Merge sort"], correct:1},
+      {q:"The preprocessor directive #define is used for:", options:["Defining functions","Defining macros/constants","Declaring variables","Looping"], correct:1},
+    ]
+  },
+  "Environment and Ecology": {
+    notes: "Unit 1: Environment definition & types, ecosystem structure, food chain/web, ecological pyramid, EIA.\nUnit 2: Natural resources — water, mineral, energy, forest resources.\nUnit 3: Pollution — water, air, soil, noise pollution; solid waste management.\nUnit 4: Global warming, greenhouse effect, climate change, acid rain, ozone depletion.\nUnit 5: Environmental Protection Act 1986, role of NGOs, population & environment.",
+    questions: "1. Define ecosystem and explain its structure.\n2. Explain the food chain and food web with examples.\n3. What are the causes and effects of water pollution?\n4. Explain the greenhouse effect and its impact on climate change.\n5. Discuss the causes and control measures of air pollution.\n6. What is Environmental Impact Assessment (EIA)?\n7. Explain the ozone layer depletion and its consequences.\n8. Discuss the role of NGOs in environmental protection.\n9. Explain the classification of natural resources.\n10. What are the effects of population growth on environment?",
+    mockTest: [
+      {q:"Which gas is primarily responsible for the greenhouse effect?", options:["Oxygen","Carbon dioxide","Nitrogen","Hydrogen"], correct:1},
+      {q:"Ozone layer protects earth from:", options:["Visible light","Ultraviolet rays","Infrared rays","Radio waves"], correct:1},
+      {q:"Which of these is a renewable energy source?", options:["Coal","Petroleum","Solar energy","Natural gas"], correct:2},
+      {q:"Acid rain is mainly caused by:", options:["CO2 and O2","SO2 and NOx","N2 and H2","CH4 only"], correct:1},
+      {q:"EIA stands for:", options:["Environmental Impact Assessment","Energy Impact Analysis","Ecological Index Assessment","Environmental India Agency"], correct:0},
+      {q:"The Environmental Protection Act was passed in:", options:["1972","1986","1990","2000"], correct:1},
+      {q:"Food chain starts with:", options:["Carnivores","Producers","Decomposers","Omnivores"], correct:1},
+      {q:"Which is NOT a type of pollution mentioned in the syllabus?", options:["Water pollution","Noise pollution","Light pollution","Air pollution"], correct:2},
+      {q:"NGO stands for:", options:["Non-Governmental Organization","National Government Office","Non-Global Organization","New Government Order"], correct:0},
+      {q:"Global warming leads to:", options:["Decrease in sea level","Increase in sea level","No change in climate","Cooling of earth"], correct:1},
+    ]
+  },
+  "Engineering Physics": {
+    notes: "Unit 1: Quantum Mechanics — black body radiation, Compton effect, de-Broglie waves, Schrodinger equation, particle in a box.\nUnit 2: Electromagnetic Field Theory — Maxwell's equations, Poynting vector, EM waves.\nUnit 3: Wave Optics — interference, Newton's rings, diffraction, diffraction grating, resolving power.\nUnit 4: Fiber Optics & Laser — optical fiber principle, numerical aperture, laser principle, types (Ruby, He-Ne).\nUnit 5: Superconductors & Nanomaterials — Meissner effect, Type I/II superconductors, nanomaterials properties.",
+    questions: "1. Derive the time-independent Schrodinger wave equation.\n2. Explain the Compton effect.\n3. State and explain Maxwell's equations.\n4. Explain Newton's Rings experiment and its applications.\n5. Derive the expression for numerical aperture of an optical fiber.\n6. Explain the principle and working of a He-Ne laser.\n7. What is Meissner effect in superconductors?\n8. Differentiate between Type I and Type II superconductors.\n9. Explain population inversion in laser action.\n10. What are quantum dots? Explain their applications.",
+    mockTest: [
+      {q:"De-Broglie wavelength is associated with:", options:["Only light","Only electrons","All matter particles","Only photons"], correct:2},
+      {q:"Compton effect proves the:", options:["Wave nature of light","Particle nature of light","Both wave and particle nature","Neither"], correct:1},
+      {q:"LASER stands for Light Amplification by Stimulated Emission of:", options:["Electrons","Radiation","Photons only","Waves"], correct:1},
+      {q:"Newton's rings are formed due to:", options:["Diffraction","Interference","Polarization","Refraction"], correct:1},
+      {q:"Numerical aperture of an optical fiber indicates:", options:["Light gathering capacity","Fiber length","Fiber diameter","Refractive index only"], correct:0},
+      {q:"Meissner effect refers to:", options:["Expulsion of magnetic field from superconductor","Attraction of magnetic field","No change in field","Increase in resistance"], correct:0},
+      {q:"Maxwell's equations describe:", options:["Mechanical waves","Electromagnetic fields","Sound waves","Gravitational fields"], correct:1},
+      {q:"Which type of superconductor shows gradual transition to normal state?", options:["Type I","Type II","Both equally","Neither"], correct:1},
+      {q:"Particle in a box model is used to explain:", options:["Classical mechanics","Quantum confinement","Wave optics","Thermodynamics"], correct:1},
+      {q:"Diffraction grating is used to study:", options:["Spectra of light","Density of liquid","Viscosity","Magnetic field"], correct:0},
+    ]
+  },
+  "Engineering Mathematics-II": {
+    notes: "Unit 1: Higher order Linear ODEs with constant/variable coefficients, Cauchy-Euler equation, method of variation of parameters, series solutions (Frobenius method).\nUnit 2: Laplace Transform — properties, inverse Laplace, convolution theorem, applications to solving differential equations.\nUnit 3: Sequence & Series — convergence tests (Ratio, D'Alembert's, Raabe's), Fourier series, half-range sine/cosine series.\nUnit 4: Complex Variable-Differentiation — Cauchy-Riemann equations, analytic & harmonic functions, conformal mapping, Mobius transformation.\nUnit 5: Complex Variable-Integration — contour integrals, Cauchy-Goursat theorem, Cauchy's integral formula, Taylor's & Laurent's series, Liouville's theorem, singularities, residues, evaluation of real integrals using residue theorem.",
+    questions: "1. Solve a linear differential equation with constant coefficients.\n2. Solve an ODE using the Frobenius (series solution) method.\n3. State and prove the properties of Laplace Transform.\n4. Explain convolution theorem with an example.\n5. State the ratio test and D'Alembert's test for convergence of series.\n6. Derive the Cauchy-Riemann equations.\n7. State and prove Cauchy-Goursat theorem.\n8. Explain Taylor's and Laurent's series expansion.\n9. State Cauchy's Residue theorem and use it to evaluate a real definite integral.\n10. Explain half-range Fourier sine and cosine series.",
+    mockTest: [
+      {q:"Laplace transform converts a differential equation into:", options:["A differential equation","An algebraic equation","An integral equation","A matrix equation"], correct:1},
+      {q:"Cauchy-Riemann equations are used to check:", options:["Continuity","Differentiability of complex functions","Convergence","Integration"], correct:1},
+      {q:"A function satisfying Cauchy-Riemann equations is called:", options:["Continuous","Analytic","Divergent","Bounded"], correct:1},
+      {q:"The Frobenius method is used to solve:", options:["Linear algebraic equations","ODEs using series solutions","Matrices","Integrals"], correct:1},
+      {q:"The Laplace Transform of a constant 'a' is:", options:["a","a/s","as","1/a"], correct:1},
+      {q:"Fourier series is used to represent:", options:["Periodic functions","Random functions","Only polynomials","Only exponential functions"], correct:0},
+      {q:"Cauchy-Goursat theorem states that the integral of an analytic function over a closed contour is:", options:["Infinite","Zero","Equal to its derivative","Undefined"], correct:1},
+      {q:"Laurent's series is used when the function has:", options:["No singularity","A singularity within the region","Only real values","Constant value"], correct:1},
+      {q:"Residue theorem is used to evaluate:", options:["Derivatives","Contour integrals","Matrices","Limits only"], correct:1},
+      {q:"Cauchy-Euler equation is a type of:", options:["Non-linear equation","Linear differential equation with variable coefficients","Partial differential equation","Algebraic equation"], correct:1},
+    ]
+  },
+  "Fundamentals of Electronics Engineering": {
+    notes: "Unit 1: Semiconductor diode — V-I characteristics, Zener diode, rectifiers, clippers, clampers, LED, photodiode.\nUnit 2: BJT & FET — construction, operation, configurations, MOSFET.\nUnit 3: Operational Amplifiers — basics, inverting/non-inverting amplifier, summing amplifier, comparators.\nUnit 4: Digital Electronics — number systems, binary arithmetic, logic gates, Boolean algebra, K-map.\nUnit 5: Communication Engineering — signal representation, modulation, wireless communication basics.",
+    questions: "1. Explain the V-I characteristics of a PN junction diode.\n2. Explain the working of a full-wave rectifier.\n3. Differentiate between BJT and FET.\n4. Explain the working of an operational amplifier as an inverting amplifier.\n5. Simplify a Boolean expression using K-map.\n6. Explain the working principle of amplitude modulation.\n7. What is Zener breakdown? Explain its applications.\n8. Explain the construction and working of a MOSFET.\n9. Convert a given decimal number into binary.\n10. Explain the basic elements of a communication system.",
+    mockTest: [
+      {q:"A Zener diode is mainly used as a:", options:["Rectifier","Voltage regulator","Amplifier","Oscillator"], correct:1},
+      {q:"BJT stands for:", options:["Bipolar Junction Transistor","Basic Junction Transistor","Binary Junction Transistor","Bipolar Junction Tube"], correct:0},
+      {q:"An operational amplifier ideally has:", options:["Zero input impedance","Infinite input impedance","Infinite output impedance","Zero gain"], correct:1},
+      {q:"Which gate gives output 1 only when both inputs are 1?", options:["OR","AND","NOT","NAND"], correct:1},
+      {q:"K-map is used for:", options:["Simplifying Boolean expressions","Solving matrices","Finding derivatives","Amplifying signals"], correct:0},
+      {q:"MOSFET stands for:", options:["Metal Oxide Semiconductor Field Effect Transistor","Metal Organic Semiconductor Field Effect Transistor","Multi Output Semiconductor FET","Metal Oxide Silicon Emission Transistor"], correct:0},
+      {q:"Modulation is the process of:", options:["Removing noise","Varying a carrier signal with message signal","Amplifying DC signal","Rectifying AC signal"], correct:1},
+      {q:"LED stands for:", options:["Light Emitting Diode","Low Energy Diode","Light Emission Device","Linear Electronic Diode"], correct:0},
+      {q:"Full wave rectifier converts AC into:", options:["Pulsating DC","Pure AC","Square wave","Triangular wave"], correct:0},
+      {q:"Binary number system uses how many digits?", options:["2","8","10","16"], correct:0},
+    ]
+  },
+  "Fundamentals of Mechanical Engineering": {
+    notes: "Unit 1: Mechanics — force, moment, couple, equilibrium, stress-strain, Hooke's law.\nUnit 2: IC Engines & EVs — two-stroke/four-stroke engines, SI/CI engines, electric & hybrid vehicles.\nUnit 3: Refrigeration & Air-conditioning — COP, refrigeration methods, air conditioning basics.\nUnit 4: Fluid Mechanics — fluid properties, Pascal's law, continuity equation, turbines & pumps.\nUnit 5: Measurement & Mechatronics — measurement of pressure/temperature/strain, sensors, actuators.",
+    questions: "1. State and explain the principle of transmissibility of force.\n2. Differentiate between two-stroke and four-stroke engines.\n3. Explain the working of a domestic refrigerator.\n4. State Pascal's law and its applications.\n5. Explain the working principle of a centrifugal pump.\n6. Explain the construction and working of a Pelton wheel turbine.\n7. What is the significance of Coefficient of Performance (COP) in refrigeration?\n8. Explain the working of a Bourdon tube pressure gauge.\n9. Differentiate between sensors and transducers.\n10. Explain the components of an electric vehicle.",
+    mockTest: [
+      {q:"Hooke's law relates stress and:", options:["Strain","Force","Pressure","Velocity"], correct:0},
+      {q:"A four-stroke engine completes its power cycle in:", options:["1 revolution","2 revolutions","4 revolutions","3 revolutions"], correct:1},
+      {q:"COP stands for:", options:["Coefficient of Performance","Cycle of Pressure","Constant of Power","Capacity of Plant"], correct:0},
+      {q:"Pascal's law states that pressure applied to a confined fluid is:", options:["Absorbed","Transmitted equally in all directions","Reduced","Reflected"], correct:1},
+      {q:"Pelton wheel is a type of:", options:["Pump","Turbine","Compressor","Engine"], correct:1},
+      {q:"Centrifugal pump works on the principle of:", options:["Centrifugal force","Gravity only","Capillary action","Osmosis"], correct:0},
+      {q:"A thermocouple is used to measure:", options:["Pressure","Temperature","Strain","Flow rate"], correct:1},
+      {q:"SI engine uses which ignition method?", options:["Compression ignition","Spark ignition","Auto ignition","Laser ignition"], correct:1},
+      {q:"Mechatronics is the combination of:", options:["Mechanical and Electronics engineering","Only mechanical engineering","Only electrical engineering","Civil and mechanical"], correct:0},
+      {q:"Venturi meter is used to measure:", options:["Pressure","Mass flow rate","Temperature","Force"], correct:1},
+    ]
+  },
+  "Soft Skills": {
+    notes: "Unit 1: Applied grammar — sentence transformation, subject-verb agreement, prefixes/suffixes, synonyms/antonyms.\nUnit 2: Listening & Speaking — active listening, listening techniques, pronunciation, speaking style.\nUnit 3: Reading & Writing — skimming, scanning, effective writing tools, business letter writing.\nUnit 4: Presentation & Interaction Skills — public speaking, non-verbal communication, presentation strategies.\nUnit 5: Workplace skills — leadership qualities, communication for leaders, stress management (4 A's).",
+    questions: "1. Explain the different types of sentence transformation.\n2. What is active listening? Explain its importance.\n3. Differentiate between skimming and scanning.\n4. Explain the elements of non-verbal communication.\n5. What are the key elements of an effective presentation?\n6. Explain the 4 A's technique for stress management.\n7. Write a formal business letter format.\n8. Explain the qualities of a good leader.\n9. What is the significance of body language in communication?\n10. Explain the different modes of listening.",
+    mockTest: [
+      {q:"Skimming is used to:", options:["Read every word carefully","Get a general overview quickly","Memorize the text","Translate the text"], correct:1},
+      {q:"Kinesics refers to:", options:["Body language","Tone of voice","Written communication","Listening skills"], correct:0},
+      {q:"Which of these is NOT one of the 4 A's for stress management?", options:["Avoid","Alter","Adapt","Attack"], correct:3},
+      {q:"Antonyms are words that are:", options:["Similar in meaning","Opposite in meaning","Same in spelling","Same in pronunciation"], correct:1},
+      {q:"Proxemics deals with:", options:["Use of space in communication","Use of voice","Use of words","Use of gestures only"], correct:0},
+      {q:"A good listener should:", options:["Interrupt frequently","Practice active listening","Ignore the speaker","Multitask while listening"], correct:1},
+      {q:"Which is a type of business communication?", options:["Personal diary","Official letter","Poem","Story"], correct:1},
+      {q:"Public speaking requires:", options:["Confidence, clarity and fluency","Only loud voice","Fast speech","Reading from notes only"], correct:0},
+      {q:"Homophones are words that:", options:["Sound the same but have different meanings","Look the same but sound different","Have the same meaning","Are opposite in meaning"], correct:0},
+      {q:"Effective leadership requires good:", options:["Listening and responding skills","Ignoring team members","Avoiding communication","Working alone"], correct:0},
+    ]
+  },
+  "Web Technology": {
+    notes: "Unit 1 (HTML Basics): Headings & paragraphs, text formatting tags (strong, em, mark, code), ordered/unordered/nested lists, hyperlinks (internal/external), images, tables, forms, audio/video elements, semantic page structure (header, section, article, footer).\nUnit 2 (CSS Styling): Inline, Internal and External CSS, colors/gradients/typography, CSS Box Model (content-padding-border-margin, box-sizing), CSS positioning (static, relative, absolute, fixed, sticky).\nUnit 3 (JavaScript): alert(), prompt(), confirm(), arithmetic operations, conditional statements (if-else), functions (factorial example), event handling with addEventListener, button click events.\nUnit 4 (Responsive Design): Bootstrap grid system (rows/columns/breakpoints), responsive navigation bar, responsive registration form.\nUnit 5 (Project): Building a personal portfolio website using semantic HTML, CSS and responsive layout.",
+    questions: "1. Differentiate between <strong>/<em> and <b>/<i> tags in HTML.\n2. Explain the difference between ordered and unordered lists with an example.\n3. What is the difference between internal, inline, and external CSS?\n4. Explain the CSS Box Model with a diagram.\n5. Differentiate between relative, absolute, fixed and sticky positioning in CSS.\n6. Write a JavaScript function to calculate the factorial of a number.\n7. Explain the difference between prompt() and confirm() in JavaScript.\n8. What is the Bootstrap grid system? Explain rows and columns.\n9. Explain how addEventListener is used to handle button clicks.\n10. What are the key sections of a personal portfolio website?",
+    mockTest: [
+      {q:"Which tag is used to create a hyperlink in HTML?", options:["<link>","<a>","<href>","<nav>"], correct:1},
+      {q:"Which attribute makes an image accessible to screen readers?", options:["src","alt","title","width"], correct:1},
+      {q:"Which CSS property controls the space between content and border?", options:["margin","padding","border","outline"], correct:1},
+      {q:"Which CSS positioning value keeps an element fixed relative to the viewport?", options:["static","relative","fixed","inherit"], correct:2},
+      {q:"Which JavaScript function displays a dialog box asking for user input?", options:["alert()","confirm()","prompt()","console.log()"], correct:2},
+      {q:"Which method is preferred to attach an event handler in modern JavaScript?", options:["onclick attribute only","addEventListener()","inline script only","document.write()"], correct:1},
+      {q:"In Bootstrap, which class creates a responsive container for a grid row?", options:["row","container","col-md-6","navbar"], correct:1},
+      {q:"Which HTML5 element is used to embed video?", options:["<media>","<video>","<embed>","<movie>"], correct:1},
+      {q:"box-sizing: border-box means the declared width includes:", options:["Only content","Content and padding only","Content, padding and border","Margin only"], correct:2},
+      {q:"Which HTML element is best suited for a page's main navigation links?", options:["<div>","<nav>","<span>","<table>"], correct:1},
+    ]
+  }
+};
+const SEM1_SUBJECTS = ["Engineering Chemistry","Engineering Mathematics-I","Fundamentals of Electrical Engineering","Programming for Problem Solving","Environment and Ecology"];
+const SEM2_SUBJECTS = ["Engineering Physics","Engineering Mathematics-II","Fundamentals of Electronics Engineering","Fundamentals of Mechanical Engineering","Soft Skills","Web Technology"];
+function buildSemMap(list){ const o={}; list.forEach(name=>{ o[name]=SUBJECT_DATA[name]; }); return o; }
+const STUDY_DATA = {
+  CSE: { "Semester 1": buildSemMap(SEM1_SUBJECTS), "Semester 2": buildSemMap(SEM2_SUBJECTS) },
+  IT: { "Semester 1": buildSemMap(SEM1_SUBJECTS), "Semester 2": buildSemMap(SEM2_SUBJECTS) }
+};
+let studyState = {};
+function showStudyHome(){
+  render(`
+    ${topbar("Study Material","showHome")}
+    <div class="card">
+      <label>Your Name</label>
+      <input id="study_name" placeholder="Enter your name">
+      <button class="btn" onclick="studySetName()">Continue</button>
+    </div>
+  `);
+}
+function studySetName(){
+  const name = document.getElementById("study_name").value.trim();
+  if(!name){ return; }
+  studyState = { name };
+  showStudyBranch();
+}
+function showStudyBranch(){
+  render(`
+    ${topbar("Select Branch","showStudyHome")}
+    <p class="sub">Hi ${esc(studyState.name)}, choose your branch.</p>
+    ${BRANCHES.map(b=>`<button class="btn" onclick="setStudyBranch('${b}')">${b}</button>`).join('')}
+  `);
+}
+function setStudyBranch(branch){
+  studyState.branch = branch;
+  showStudyYear();
+}
+function showStudyYear(){
+  render(`
+    ${topbar("Select Year", `()=>showStudyBranch()`)}
+    ${YEARS.map(y=>`<button class="btn" onclick="setStudyYear('${y}')">${y}</button>`).join('')}
+  `);
+}
+function setStudyYear(year){
+  studyState.year = year;
+  showStudySemester();
+}
+function showStudySemester(){
+  const sems = SEMESTERS_BY_YEAR[studyState.year] || [];
+  render(`
+    ${topbar("Select Semester", `()=>showStudyYear()`)}
+    ${sems.map(s=>`<button class="btn" onclick="setStudySemester('${s}')">${s}</button>`).join('')}
+  `);
+}
+function setStudySemester(sem){
+  studyState.semester = sem;
+  showStudySubjects();
+}
+function showStudySubjects(){
+  const branchData = STUDY_DATA[studyState.branch] || {};
+  const semData = branchData[studyState.semester] || {};
+  const subjects = Object.keys(semData);
+  render(`
+    ${topbar("Select Subject", `()=>showStudySemester()`)}
+    ${subjects.length ? subjects.map(sub=>`<button class="btn" onclick="setStudySubject('${esc(sub)}')">${esc(sub)}</button>`).join('') : '<p class="empty">No subjects added yet for this semester.</p>'}
+  `);
+}
+function setStudySubject(subject){
+  studyState.subject = subject;
+  showSubjectOptions();
+}
+function showSubjectOptions(){
+  render(`
+    ${topbar(studyState.subject, `()=>showStudySubjects()`)}
+    <button class="btn" onclick="showStudyContent('notes')">📝 Important Notes</button>
+    <button class="btn" onclick="showStudyContent('questions')">❓ Practice Questions</button>
+    <button class="btn" onclick="startMockTest()">🧪 Mock Test</button>
+  `);
+}
+function getCurrentSubjectData(){
+  return ((STUDY_DATA[studyState.branch]||{})[studyState.semester]||{})[studyState.subject];
+}
+function showStudyContent(type){
+  const data = getCurrentSubjectData();
+  const content = data ? (type==='notes' ? data.notes : data.questions) : "No content added yet.";
+  render(`
+    ${topbar(type==='notes'?'Important Notes':'Practice Questions', `()=>showSubjectOptions()`)}
+    <div class="card"><p class="sub" style="white-space:pre-wrap; color:var(--text);">${esc(content)}</p></div>
+  `);
+}
+function startMockTest(){
+  const data = getCurrentSubjectData();
+  const questions = (data && data.mockTest) ? data.mockTest.slice(0,10) : [];
+  if(questions.length===0){
+    render(`${topbar("Mock Test", `()=>showSubjectOptions()`)}<p class="empty">No mock test added yet for this subject.</p>`);
+    return;
+  }
+  studyState.quiz = { questions, index:0, score:0 };
+  renderMockQuestion();
+}
+function renderMockQuestion(){
+  const { questions, index } = studyState.quiz;
+  const q = questions[index];
+  render(`
+    ${topbar(`Question ${index+1} / ${questions.length}`, `()=>showSubjectOptions()`)}
+    <div class="card">
+      <p class="sub" style="color:var(--text); font-size:1.05rem;">${esc(q.q)}</p>
+      ${q.options.map((opt,i)=>`<button class="btn secondary" onclick="answerMock(${i})">${esc(opt)}</button>`).join('')}
+    </div>
+  `);
+}
+function answerMock(selected){
+  const { questions, index } = studyState.quiz;
+  if(selected === questions[index].correct){ studyState.quiz.score += 2; }
+  studyState.quiz.index++;
+  if(studyState.quiz.index >= questions.length){
+    showMockResult();
+  }else{
+    renderMockQuestion();
+  }
+}
+function showMockResult(){
+  const { questions, score } = studyState.quiz;
+  render(`
+    ${topbar("Mock Test Result", `()=>showSubjectOptions()`)}
+    <div class="card" style="text-align:center;">
+      <h1>${score} / ${questions.length*2}</h1>
+      <p class="sub">Great effort, ${esc(studyState.name)}!</p>
+      <button class="btn" onclick="startMockTest()">🔁 Retry</button>
+    </div>
+  `);
+}
+
+// ---------------- STUDENT MENU ----------------
+function showStudentMenu(){
+  render(`
+    ${topbar("Student Portal","showProjectHome")}
+    <button class="btn" onclick="showRegisterForm()">📝 Register / Add Project</button>
+    <button class="btn" onclick="showUpdateSearch()">✏️ Update Existing Details</button>
+  `);
+}
+
+
+// ---------------- REGISTER / UPDATE FORM ----------------
+function formHtml(data, isUpdate){
+  data = data || {};
+  return `
+    ${topbar(isUpdate ? "Update Details" : "Student Registration", "showStudentMenu")}
+    <div class="card">
+      <label>Student Name</label>
+      <input id="f_name" value="${esc(data.name||'')}">
+      <label>Branch</label>
+      <input id="f_branch" value="${esc(data.branch||'')}">
+      <label>Course</label>
+      <input id="f_course" value="${esc(data.course||'')}">
+      <label>Project Name</label>
+      <input id="f_project" value="${esc(data.project||'')}">
+      <label>${isUpdate ? 'New Password (leave blank to keep current)' : 'Set a Password (to protect your profile)'}</label>
+      <input id="f_password" type="password" placeholder="Password">
+      <label>Security Answer (used if you forget your password)</label>
+      <input id="f_secret" placeholder="e.g. your pet's name" value="${esc(data.secretAnswer||'')}">
+      <label>Presentation</label>
+      <textarea id="f_presentation">${esc(data.presentation||'')}</textarea>
+      <label>Prototype</label>
+      <textarea id="f_prototype">${esc(data.prototype||'')}</textarea>
+      <div class="grid2">
+        <div>
+          <label>Year</label>
+          <select id="f_year">
+            <option value="">Select</option>
+            ${YEARS.map(y=>`<option ${data.year===y?'selected':''}>${y}</option>`).join('')}
+          </select>
+        </div>
+        <div>
+          <label>Section</label>
+          <select id="f_section">
+            <option value="">Select</option>
+            ${SECTIONS.map(s=>`<option ${data.section===s?'selected':''}>${s}</option>`).join('')}
+          </select>
+        </div>
+      </div>
+      <p class="status" id="formstatus"></p>
+      <button class="btn" onclick="${isUpdate?'saveUpdate()':'saveRegistration()'}">💾 ${isUpdate?'Update Details':'Save Registration'}</button>
+    </div>
+  `;
+}
+function showRegisterForm(){
+  editingId = null;
+  render(formHtml(null,false));
+}
+function readForm(){
+  return {
+    name: document.getElementById("f_name").value.trim(),
+    branch: document.getElementById("f_branch").value.trim(),
+    course: document.getElementById("f_course").value.trim(),
+    project: document.getElementById("f_project").value.trim(),
+    password: document.getElementById("f_password").value,
+    secretAnswer: document.getElementById("f_secret").value.trim(),
+    presentation: document.getElementById("f_presentation").value.trim(),
+    prototype: document.getElementById("f_prototype").value.trim(),
+    year: document.getElementById("f_year").value,
+    section: document.getElementById("f_section").value,
+  };
+}
+function validate(d, isUpdate){
+  if(!d.name) return "Please enter student name.";
+  if(!d.branch) return "Please enter branch.";
+  if(!d.course) return "Please enter course.";
+  if(!d.project) return "Please enter project name.";
+  if(!isUpdate && (!d.password || d.password.length < 4)) return "Please set a password (at least 4 characters).";
+  if(!isUpdate && !d.secretAnswer) return "Please set a security answer.";
+  if(!d.year) return "Please select year.";
+  if(!d.section) return "Please select section.";
+  return null;
+}
+async function saveRegistration(){
+  const d = readForm();
+  const err = validate(d, false);
+  const statusEl = document.getElementById("formstatus");
+  if(err){ statusEl.textContent = err; return; }
+  if(!dbReady) await initDb();
+  if(!db){ statusEl.textContent = "Could not save — data storage is unavailable."; return; }
+  try{
+    await db.collection("students").add({...d, resetCount: 0, createdAt: Date.now()});
+    alert("Registration saved successfully!");
+    showStudentMenu();
+  }catch(e){ statusEl.textContent = "Save fail: " + (e.message||e); }
+}
+async function saveUpdate(){
+  const d = readForm();
+  const err = validate(d, true);
+  const statusEl = document.getElementById("formstatus");
+  if(err){ statusEl.textContent = err; return; }
+  if(!db || !editingId){ statusEl.textContent = "Update fail."; return; }
+  if(!d.password){ delete d.password; } // keep existing password if left blank
+  try{
+    await db.collection("students").doc(editingId).update(d);
+    alert("Details updated successfully!");
+    showStudentMenu();
+  }catch(e){ statusEl.textContent = "Update fail: " + (e.message||e); }
+}
+
+// ---------------- UPDATE SEARCH ----------------
+function showUpdateSearch(){
+  render(`
+    ${topbar("Find Your Registration","showStudentMenu")}
+    <label>Enter your name</label>
+    <input id="searchName" placeholder="Name...">
+    <button class="btn" style="margin-top:12px" onclick="doSearch()">🔍 Search</button>
+    <button class="btn link" onclick="showForgotSearch()">Forgot Password?</button>
+    <div id="searchResults"></div>
+  `);
+}
+async function doSearch(){
+  const name = document.getElementById("searchName").value.trim().toLowerCase();
+  const resultsEl = document.getElementById("searchResults");
+  if(!name){ resultsEl.innerHTML = '<p class="status">Name is required.</p>'; return; }
+  if(!dbReady) await initDb();
+  if(!db){ resultsEl.innerHTML = '<p class="status">Data unavailable.</p>'; return; }
+  resultsEl.innerHTML = '<p class="status">Searching...</p>';
+  try{
+    const snap = await db.collection("students").get();
+    const matches = snap.docs.filter(d => (d.data().name||'').toLowerCase().includes(name));
+    if(matches.length===0){ resultsEl.innerHTML = '<p class="empty">No student found.</p>'; return; }
+    resultsEl.innerHTML = matches.map(d=>{
+      const s = d.data();
+      return `<div class="list-item" onclick="showPasswordCheck('${d.id}')">
+        <span>${esc(s.name)} | ${esc(s.year||'')} | Sec ${esc(s.section||'')}</span>
+        <span>➜</span>
+      </div>`;
+    }).join('');
+  }catch(e){ resultsEl.innerHTML = '<p class="status">Error: '+(e.message||e)+'</p>'; }
+}
+function showPasswordCheck(id){
+  render(`
+    ${topbar("Enter Password","showUpdateSearch")}
+    <div class="card">
+      <p class="sub">Enter your profile password to continue.</p>
+      <label>Password</label>
+      <input id="pw_check" type="password" placeholder="Password">
+      <p class="status" id="pwstatus"></p>
+      <button class="btn" onclick="verifyAndOpen('${id}')">🔓 Continue</button>
+    </div>
+  `);
+}
+async function verifyAndOpen(id){
+  const pw = document.getElementById("pw_check").value;
+  const st = document.getElementById("pwstatus");
+  try{
+    const doc = await db.collection("students").doc(id).get();
+    if(!doc.exists){ st.textContent = "Not found."; return; }
+    const data = doc.data();
+    if(data.password !== pw){ st.textContent = "Incorrect password."; return; }
+    editingId = id;
+    render(formHtml(data, true));
+  }catch(e){ st.textContent = "Error: " + (e.message||e); }
+}
+
+// ---------------- FORGOT PASSWORD ----------------
+function showForgotSearch(){
+  render(`
+    ${topbar("Forgot Password","showUpdateSearch")}
+    <label>Enter your name</label>
+    <input id="fp_name" placeholder="Name...">
+    <button class="btn" style="margin-top:12px" onclick="fpSearch()">🔍 Search</button>
+    <div id="fpResults"></div>
+  `);
+}
+async function fpSearch(){
+  const name = document.getElementById("fp_name").value.trim().toLowerCase();
+  const resultsEl = document.getElementById("fpResults");
+  if(!name){ resultsEl.innerHTML = '<p class="status">Name is required.</p>'; return; }
+  if(!dbReady) await initDb();
+  if(!db){ resultsEl.innerHTML = '<p class="status">Data unavailable.</p>'; return; }
+  resultsEl.innerHTML = '<p class="status">Searching...</p>';
+  try{
+    const snap = await db.collection("students").get();
+    const matches = snap.docs.filter(d => (d.data().name||'').toLowerCase().includes(name));
+    if(matches.length===0){ resultsEl.innerHTML = '<p class="empty">No student found.</p>'; return; }
+    resultsEl.innerHTML = matches.map(d=>{
+      const s = d.data();
+      return `<div class="list-item" onclick="showSecretCheck('${d.id}')">
+        <span>${esc(s.name)} | ${esc(s.year||'')} | Sec ${esc(s.section||'')}</span>
+        <span>➜</span>
+      </div>`;
+    }).join('');
+  }catch(e){ resultsEl.innerHTML = '<p class="status">Error: '+(e.message||e)+'</p>'; }
+}
+async function showSecretCheck(id){
+  render(`<p class="status">Loading...</p>`);
+  const doc = await db.collection("students").doc(id).get();
+  if(!doc.exists){ render('<p class="empty">Not found.</p>'); return; }
+  const data = doc.data();
+  const used = data.resetCount || 0;
+  if(used >= 2){
+    render(`
+      ${topbar("Forgot Password","showUpdateSearch")}
+      <div class="card">
+        <p class="sub">You have already reset your password 2 times. Please contact your teacher to reset it further.</p>
+      </div>
+    `);
+    return;
+  }
+  render(`
+    ${topbar("Forgot Password","showUpdateSearch")}
+    <div class="card">
+      <p class="sub">Answer your security question to reset your password.</p>
+      <p class="sub">Resets used: ${used} / 2</p>
+      <label>Security Answer</label>
+      <input id="fp_answer" placeholder="Your answer">
+      <p class="status" id="fpstatus"></p>
+      <button class="btn" onclick="fpVerify('${id}')">Verify</button>
+    </div>
+  `);
+}
+async function fpVerify(id){
+  const ans = document.getElementById("fp_answer").value.trim().toLowerCase();
+  const st = document.getElementById("fpstatus");
+  try{
+    const doc = await db.collection("students").doc(id).get();
+    if(!doc.exists){ st.textContent = "Not found."; return; }
+    const data = doc.data();
+    if((data.secretAnswer||'').trim().toLowerCase() !== ans){ st.textContent = "Incorrect answer."; return; }
+    render(`
+      ${topbar("Set New Password","showUpdateSearch")}
+      <div class="card">
+        <label>New Password</label>
+        <input id="fp_newpass" type="password" placeholder="New Password">
+        <label>Confirm New Password</label>
+        <input id="fp_newpass2" type="password" placeholder="Confirm New Password">
+        <p class="status" id="fpstatus2"></p>
+        <button class="btn" onclick="fpSetNewPassword('${id}')">💾 Save New Password</button>
+      </div>
+    `);
+  }catch(e){ st.textContent = "Error: " + (e.message||e); }
+}
+async function fpSetNewPassword(id){
+  const p1 = document.getElementById("fp_newpass").value;
+  const p2 = document.getElementById("fp_newpass2").value;
+  const st = document.getElementById("fpstatus2");
+  if(!p1 || p1.length < 4){ st.textContent = "Password should be at least 4 characters."; return; }
+  if(p1 !== p2){ st.textContent = "Passwords do not match."; return; }
+  try{
+    const doc = await db.collection("students").doc(id).get();
+    const used = (doc.exists && doc.data().resetCount) || 0;
+    if(used >= 2){ st.textContent = "Reset limit reached. Contact your teacher."; return; }
+    await db.collection("students").doc(id).update({password: p1, resetCount: used + 1});
+    alert("Password updated successfully!");
+    showStudentMenu();
+  }catch(e){ st.textContent = "Error: " + (e.message||e); }
+}
+
+// ---------------- TEACHER AUTH ----------------
+let teacherUnlocked = false;
+
+async function showTeacherYears(){
+  if(teacherUnlocked){ renderTeacherYears(); return; }
+  render(`<p class="status">Loading...</p>`);
+  if(!dbReady) await initDb();
+  if(!db){ render(`${topbar("Teacher Portal","showProjectHome")}<p class="empty">Data unavailable.</p>`); return; }
+  try{
+    const doc = await db.collection("config").doc("teacher").get();
+    if(doc.exists && doc.data().password){
+      showTeacherLogin();
+    }else{
+      showTeacherSignup();
+    }
+  }catch(e){
+    render(`${topbar("Teacher Portal","showProjectHome")}<p class="status">Error: ${esc(e.message||String(e))}</p>`);
+  }
+}
+
+function showTeacherSignup(){
+  render(`
+    ${topbar("Teacher Sign Up","showProjectHome")}
+    <div class="card">
+      <p class="sub">Set up Teacher access for the first time.</p>
+      <label>Create Username</label>
+      <input id="tp_user" placeholder="Username">
+      <label>Create Password</label>
+      <input id="tp_pass1" type="password" placeholder="Password">
+      <label>Confirm Password</label>
+      <input id="tp_pass2" type="password" placeholder="Confirm Password">
+      <p class="status" id="tpstatus"></p>
+      <button class="btn" onclick="teacherSignup()">✅ Create & Continue</button>
+    </div>
+  `);
+}
+async function teacherSignup(){
+  const u = document.getElementById("tp_user").value.trim();
+  const p1 = document.getElementById("tp_pass1").value;
+  const p2 = document.getElementById("tp_pass2").value;
+  const st = document.getElementById("tpstatus");
+  if(!u){ st.textContent = "Please enter a username."; return; }
+  if(!p1 || p1.length < 4){ st.textContent = "Password should be at least 4 characters."; return; }
+  if(p1 !== p2){ st.textContent = "Passwords do not match."; return; }
+  try{
+    await db.collection("config").doc("teacher").set({username: u, password: p1});
+    teacherUnlocked = true;
+    renderTeacherYears();
+  }catch(e){ st.textContent = "Fail: " + (e.message||e); }
+}
+
+function showTeacherLogin(){
+  render(`
+    ${topbar("Teacher Login","showProjectHome")}
+    <div class="card">
+      <label>Username</label>
+      <input id="tl_user" placeholder="Username">
+      <label>Password</label>
+      <input id="tl_pass" type="password" placeholder="Password">
+      <p class="status" id="tlstatus"></p>
+      <button class="btn" onclick="teacherLogin()">🔓 Login</button>
+    </div>
+  `);
+}
+async function teacherLogin(){
+  const u = document.getElementById("tl_user").value.trim();
+  const p = document.getElementById("tl_pass").value;
+  const st = document.getElementById("tlstatus");
+  try{
+    const doc = await db.collection("config").doc("teacher").get();
+    const data = doc.exists ? doc.data() : {};
+    if(doc.exists && data.username === u && data.password === p){
+      teacherUnlocked = true;
+      renderTeacherYears();
+    }else{
+      st.textContent = "Incorrect username or password.";
+    }
+  }catch(e){ st.textContent = "Fail: " + (e.message||e); }
+}
+
+function renderTeacherYears(){
+  render(`
+    ${topbar("Teacher Portal","showProjectHome")}
+    <p class="sub">Select Year</p>
+    ${YEARS.map(y=>`<button class="btn" onclick="showTeacherSections('${y}')">${y}</button>`).join('')}
+  `);
+}
+function showTeacherSections(year){
+  render(`
+    ${topbar(year,"showTeacherYears")}
+    <p class="sub">Select Section</p>
+    ${SECTIONS.map(s=>`<button class="btn" onclick="showTeacherStudents('${esc(year)}','${s}')">Section ${s}</button>`).join('')}
+  `);
+}
+async function showTeacherStudents(year, section){
+  render(`
+    ${topbar(year+" - Sec "+section, `()=>showTeacherSections('${esc(year)}')`)}
+    <p class="status">Loading...</p>
+  `);
+  if(!dbReady) await initDb();
+  if(!db){ render(`${topbar(year+" - Sec "+section, `()=>showTeacherSections('${esc(year)}')`)}<p class="empty">Data unavailable.</p>`); return; }
+  try{
+    const snap = await db.collection("students").where("year","==",year).where("section","==",section).get();
+    const docs = snap.docs;
+    let body;
+    if(docs.length===0){
+      body = '<p class="empty">No students registered in this section.</p>';
+    }else{
+      body = `<p class="sub">Students: ${docs.length}</p>` + docs.map((d,i)=>{
+        const s = d.data();
+        return `<div class="list-item" onclick="showStudentDetails('${d.id}')">
+          <span>${i+1}. ${esc(s.name)}</span><span>➜</span>
+        </div>`;
+      }).join('');
+    }
+    render(`${topbar(year+" - Sec "+section, `()=>showTeacherSections('${esc(year)}')`)}${body}`);
+  }catch(e){
+    render(`${topbar(year+" - Sec "+section, `()=>showTeacherSections('${esc(year)}')`)}<p class="status">Error: ${esc(e.message||String(e))}</p>`);
+  }
+}
+async function showStudentDetails(id){
+  render(`<p class="status">Loading...</p>`);
+  const doc = await db.collection("students").doc(id).get();
+  if(!doc.exists){ render('<p class="empty">Not found.</p>'); return; }
+  const s = doc.data();
+  render(`
+    ${topbar("Student Details", `()=>showTeacherStudents('${esc(s.year)}','${esc(s.section)}')`)}
+    <div class="card">
+      ${detailRow("Student Name", s.name)}
+      ${detailRow("Branch", s.branch)}
+      ${detailRow("Course", s.course)}
+      ${detailRow("Project Name", s.project)}
+      ${detailRow("Year", s.year)}
+      ${detailRow("Section", s.section)}
+      ${detailRow("Password", s.password || "Not set")}
+      ${detailRow("Presentation", s.presentation || "Not provided")}
+      ${detailRow("Prototype", s.prototype || "Not provided")}
+    </div>
+    <button class="btn secondary" onclick="showShiftForm('${id}','${esc(s.year)}','${esc(s.section)}')">🔀 Shift Year/Section</button>
+    <button class="btn danger" onclick="deleteStudent('${id}','${esc(s.year)}','${esc(s.section)}')">🗑️ Delete Student</button>
+  `);
+}
+function showShiftForm(id, currentYear, currentSection){
+  render(`
+    ${topbar("Shift Year/Section", `()=>showStudentDetails('${id}')`)}
+    <div class="card">
+      <p class="sub">Change year/section without affecting any other student data.</p>
+      <div class="grid2">
+        <div>
+          <label>Year</label>
+          <select id="shift_year">
+            ${YEARS.map(y=>`<option ${currentYear===y?'selected':''}>${y}</option>`).join('')}
+          </select>
+        </div>
+        <div>
+          <label>Section</label>
+          <select id="shift_section">
+            ${SECTIONS.map(s=>`<option ${currentSection===s?'selected':''}>${s}</option>`).join('')}
+          </select>
+        </div>
+      </div>
+      <p class="status" id="shiftstatus"></p>
+      <button class="btn" onclick="saveShift('${id}')">💾 Save Shift</button>
+    </div>
+  `);
+}
+async function saveShift(id){
+  const year = document.getElementById("shift_year").value;
+  const section = document.getElementById("shift_section").value;
+  const st = document.getElementById("shiftstatus");
+  try{
+    await db.collection("students").doc(id).update({year, section});
+    alert("Student shifted successfully!");
+    showStudentDetails(id);
+  }catch(e){ st.textContent = "Error: " + (e.message||e); }
+}
+async function deleteStudent(id, year, section){
+  if(!confirm("Are you sure you want to delete this student's record? This cannot be undone.")) return;
+  try{
+    await db.collection("students").doc(id).delete();
+    alert("Student record deleted.");
+    showTeacherStudents(year, section);
+  }catch(e){ alert("Delete failed: " + (e.message||e)); }
+}
+function detailRow(k,v){
+  return `<div class="detail-row"><span class="k">${esc(k)}</span><span class="v">${esc(v||'')}</span></div>`;
+}
+function esc(str){
+  return String(str==null?'':str).replace(/[&<>"']/g, m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
+}
+
+// ---------------- ABOUT / RATING ----------------
+const RK = 'rrd_my_rating';
+const MOODS = ['Tap a star to rate','😕 Needs work','🙂 It is okay','😊 Good','🤩 Great','😍 Loved it'];
+const STAR = '<svg viewBox="0 0 24 24"><path d="M12 2.6l2.85 6.05 6.65.85-4.9 4.6 1.25 6.6L12 17.4l-5.85 3.3 1.25-6.6-4.9-4.6 6.65-.85z"/></svg>';
+let myRate = 0;
+function getMine(){ try{ return +localStorage.getItem(RK)||0; }catch(e){ return 0; } }
+function paintStars(n, pop){
+  document.querySelectorAll('#stars .star').forEach((el,i)=>{
+    el.classList.toggle('on', i<n); el.classList.remove('pop');
+    if(pop && i===n-1){ void el.offsetWidth; el.classList.add('pop'); }
+  });
+  const m = document.getElementById('mood'); if(m) m.textContent = MOODS[n];
+}
+function pickStar(n){ myRate = n; paintStars(n,true); document.getElementById('rateBtn').disabled = false; }
+async function loadRating(){
+  let mini = 'Tap to rate', full = 'Be the first to rate';
+  try{
+    if(!dbReady) await initDb();
+    const d = await db.collection('app_meta').doc('rating').get();
+    const x = d.exists ? d.data() : null;
+    if(x && x.count > 0){ const a = (x.sum/x.count).toFixed(1); mini = a+' · Tap to rate'; full = `${a} average · ${x.count} rating${x.count>1?'s':''}`; }
+  }catch(e){ full = ''; }
+  const m = document.getElementById('miniAvg'), a = document.getElementById('avg');
+  if(m) m.textContent = mini; if(a) a.textContent = full;
+}
+async function submitRating(){
+  const prev = getMine(), n = myRate; if(!n) return;
+  const btn = document.getElementById('rateBtn'), msg = document.getElementById('rateMsg');
+  btn.disabled = true;
+  try{ localStorage.setItem(RK, n); }catch(e){}
+  try{
+    if(!dbReady) await initDb();
+    const inc = firebase.firestore.FieldValue.increment;
+    await db.collection('app_meta').doc('rating').set({sum:inc(n-prev), count:inc(prev?0:1)}, {merge:true});
+    msg.textContent = 'Thanks for rating! 💜';
+  }catch(e){ msg.textContent = 'Thanks! Your rating is saved on this device. 💜'; }
+  btn.textContent = 'Update rating'; btn.disabled = false; loadRating();
+}
+function openSheet(id, html){
+  closeSheets();
+  const o = document.createElement('div');
+  o.className = 'overlay'; o.id = id;
+  o.onclick = e => { if(e.target === o) closeSheets(); };
+  o.innerHTML = `<div class="sheet" role="dialog"><div class="grab"></div><div class="sheet-body">${html}</div><div class="sheet-foot"><button class="btn secondary" style="margin:0" onclick="closeSheets()">Close</button></div></div>`;
+  document.body.appendChild(o);
+  document.body.style.overflow = 'hidden';
+}
+function closeSheets(){ document.querySelectorAll('.overlay').forEach(x=>x.remove()); document.body.style.overflow = ''; }
+function closeInfoSheet(){ closeSheets(); }
+function showRateSheet(){
+  openSheet('rateOverlay', `<div class="rate">
+    <h2>Rate this app</h2>
+    <p class="sub" style="margin:0">By <b class="hl">Rishabh Raj Dubey</b></p>
+    <div id="avg" class="status" style="margin:10px 0 0"></div>
+    <div class="stars" id="stars">${[1,2,3,4,5].map(n=>`<button class="star" aria-label="${n} star" onclick="pickStar(${n})">${STAR}</button>`).join('')}</div>
+    <div id="mood"></div>
+    <button class="btn" id="rateBtn" onclick="submitRating()" disabled>Submit rating</button>
+    <p class="status" id="rateMsg" style="margin:0"></p>
+  </div>`);
+  myRate = getMine(); paintStars(myRate);
+  if(myRate){ const b = document.getElementById('rateBtn'); b.disabled = false; b.textContent = 'Update rating'; }
+  loadRating();
+}
+function showInfoSheet(){
+  openSheet('infoOverlay', `<h2>About this app</h2>
+    <p class="sub" style="margin-bottom:8px">Made by <b class="hl">Rishabh Raj Dubey</b></p>
+    <div class="info-item"><span class="chip">🌐</span><div><div class="t">HTML, CSS & JavaScript</div><div class="d">The entire app's structure, design, and behavior are built with plain HTML/CSS/JavaScript — no framework needed, so it runs instantly in any browser.</div></div></div><div class="info-item"><span class="chip">🔥</span><div><div class="t">Google Firebase (Firestore)</div><div class="d">Used as the live database — stores all student registrations, teacher login details, and academic content so everyone sees the same up-to-date data in real time.</div></div></div><div class="info-item"><span class="chip">🐙</span><div><div class="t">GitHub Pages</div><div class="d">Free hosting service used to publish this website online, giving it a public link anyone can open on their phone or computer.</div></div></div><div class="info-item"><span class="chip">🅰️</span><div><div class="t">Google Fonts (Poppins & Inter)</div><div class="d">Used for clean, modern, premium-looking typography throughout the app.</div></div></div><div class="info-item"><span class="chip">🤖</span><div><div class="t">Claude (Anthropic AI)</div><div class="d">Used by <span style="font-weight:700; color:var(--primary);">Rishabh Raj Dubey</span> to design, code, and continuously improve this app based on feedback.</div></div></div><div class="info-item"><span class="chip">👤</span><div><div class="t">About the Developer</div><div class="d">This app was built by <span style="font-weight:700; color:var(--primary);">Rishabh Raj Dubey</span>, a B.Tech student, entirely from a phone — with no prior coding background — by working step-by-step with Claude AI to bring the idea to life.</div></div></div><div class="info-item"><span class="chip">⚠️</span><div><div class="t">Challenges Faced While Building</div><div class="d">Setting up Firebase and connecting it to the app for the first time; learning how to upload and edit files on GitHub from a mobile browser; a blank-page issue caused by an incomplete copy-paste of a large file on mobile, which took some troubleshooting to identify; and understanding how free hosting (GitHub Pages) and app packaging (PWABuilder) work — all learned along the way while building this project.</div></div></div>`);
+}
+
+// init
+showHome();
+</script>
+</body>
+</html>
