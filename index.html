@@ -9,23 +9,28 @@
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
 :root{
-  --bg1:#0f1220; --bg2:#1a1d2e; --card:#ffffff; --card2:#f7f7fb;
-  --text:#1a1b25; --muted:#6b6f80;
-  --primary:#6c5ce7; --primary2:#a78bfa; --primary-text:#ffffff;
-  --border:#ecebf3; --danger:#e5484d; --shadow:0 10px 30px rgba(30,20,60,0.10);
+  --bg1:#7f9cf5; --bg2:#a78bfa; --bg3:#f472b6;
+  --glass:rgba(255,255,255,0.42); --glass-strong:rgba(255,255,255,0.6);
+  --glass-border:rgba(255,255,255,0.65); --text:#161726; --muted:#565a72;
+  --primary:#5b53e0; --primary2:#8f6bf0; --primary-text:#ffffff;
+  --danger:#e5484d; --input-bg:rgba(255,255,255,0.5);
   box-sizing:border-box;
   padding-top:env(safe-area-inset-top,0px);
   padding-bottom:env(safe-area-inset-bottom,0px);
 }
 @media (prefers-color-scheme: dark){
   :root:not([data-theme="light"]){
-    --card:#1b1d2b; --card2:#222435; --text:#f0f0f7; --muted:#9a9db3;
-    --border:#2c2f45; --shadow:0 10px 30px rgba(0,0,0,0.35);
+    --bg1:#1c1440; --bg2:#3b1f66; --bg3:#5a1e4a;
+    --glass:rgba(255,255,255,0.08); --glass-strong:rgba(255,255,255,0.14);
+    --glass-border:rgba(255,255,255,0.18); --text:#f2f1fb; --muted:#b3b3c9;
+    --input-bg:rgba(255,255,255,0.07); --primary:#8f7dfb; --primary2:#c186f0;
   }
 }
 :root[data-theme="dark"]{
-  --card:#1b1d2b; --card2:#222435; --text:#f0f0f7; --muted:#9a9db3;
-  --border:#2c2f45; --shadow:0 10px 30px rgba(0,0,0,0.35);
+  --bg1:#1c1440; --bg2:#3b1f66; --bg3:#5a1e4a;
+  --glass:rgba(255,255,255,0.08); --glass-strong:rgba(255,255,255,0.14);
+  --glass-border:rgba(255,255,255,0.18); --text:#f2f1fb; --muted:#b3b3c9;
+  --input-bg:rgba(255,255,255,0.07); --primary:#8f7dfb; --primary2:#c186f0;
 }
 *{box-sizing:border-box;}
 html{scroll-padding-top:env(safe-area-inset-top,0px); height:100%;}
@@ -34,86 +39,110 @@ body{
   font-family:'Inter','Poppins',-apple-system,BlinkMacSystemFont,sans-serif;
   min-height:100%;
   background:
-    radial-gradient(circle at 20% 0%, rgba(108,92,231,0.12), transparent 45%),
-    radial-gradient(circle at 90% 100%, rgba(167,139,250,0.10), transparent 45%),
-    var(--card2);
+    radial-gradient(circle at 15% 10%, var(--bg3) 0%, transparent 55%),
+    radial-gradient(circle at 85% 15%, var(--bg2) 0%, transparent 55%),
+    radial-gradient(circle at 30% 90%, var(--bg1) 0%, transparent 55%),
+    radial-gradient(circle at 90% 85%, var(--bg2) 0%, transparent 50%),
+    linear-gradient(160deg, var(--bg1), var(--bg2));
   background-attachment:fixed;
 }
 @keyframes fadeSlide{
-  from{opacity:0; transform:translateY(10px);}
-  to{opacity:1; transform:translateY(0);}
+  from{opacity:0; transform:translateY(12px) scale(0.99);}
+  to{opacity:1; transform:translateY(0) scale(1);}
 }
-.app{max-width:520px; margin:0 auto; padding:28px 18px 44px; animation:fadeSlide 0.35s ease both;}
-h1{font-family:'Poppins',sans-serif; font-size:1.5rem; font-weight:700; margin:8px 0 4px; letter-spacing:-0.01em;}
+.app{max-width:520px; margin:0 auto; padding:28px 18px 44px; animation:fadeSlide 0.4s cubic-bezier(.2,.8,.2,1) both; transform-origin:center; will-change:transform;}
+h1{font-family:'Poppins',sans-serif; font-size:1.5rem; font-weight:700; margin:8px 0 4px; letter-spacing:-0.01em; color:var(--text);}
 .sub{color:var(--muted); margin:0 0 20px; font-size:0.95rem; line-height:1.5;}
 .card{
-  background:var(--card); border:1px solid var(--border); border-radius:22px; padding:20px;
-  margin-bottom:16px; box-shadow:var(--shadow);
-  animation:fadeSlide 0.4s ease both;
+  position:relative; background:var(--glass); border:1px solid var(--glass-border); border-radius:26px; padding:20px;
+  margin-bottom:16px; backdrop-filter:blur(28px) saturate(160%); -webkit-backdrop-filter:blur(28px) saturate(160%);
+  box-shadow:0 8px 32px rgba(20,10,50,0.18), inset 0 1px 0 rgba(255,255,255,0.5);
+  animation:fadeSlide 0.45s cubic-bezier(.2,.8,.2,1) both;
+  overflow:hidden;
+}
+.card::before, .btn::before, .list-item::before{
+  content:''; position:absolute; inset:0; pointer-events:none;
+  background:linear-gradient(115deg, transparent 20%, rgba(255,255,255,0.35) 40%, transparent 60%);
+  background-size:250% 250%; background-position:120% 0%;
+  animation:shimmer 6s ease-in-out infinite;
+  border-radius:inherit;
+}
+@keyframes shimmer{
+  0%, 40%{background-position:130% 0%;}
+  60%, 100%{background-position:-30% 0%;}
 }
 .btn{
-  display:block; width:100%; padding:15px; margin:9px 0; border:none; border-radius:16px;
+  position:relative; display:block; width:100%; padding:15px; margin:9px 0; border:none; border-radius:18px;
   background:linear-gradient(135deg, var(--primary), var(--primary2));
   color:var(--primary-text); font-size:1rem; font-weight:600;
   cursor:pointer; text-align:center; letter-spacing:0.01em;
-  box-shadow:0 8px 20px rgba(108,92,231,0.28);
+  box-shadow:0 8px 22px rgba(91,83,224,0.35), inset 0 1px 0 rgba(255,255,255,0.35);
   transition:transform 0.18s cubic-bezier(.2,.8,.2,1), box-shadow 0.18s ease, opacity 0.18s ease;
+  overflow:hidden;
 }
-.btn:active{transform:scale(0.96); box-shadow:0 4px 12px rgba(108,92,231,0.25);}
+.btn:active{transform:scale(0.96); box-shadow:0 4px 14px rgba(91,83,224,0.3);}
 .btn.secondary{
-  background:var(--card); color:var(--text); border:1px solid var(--border);
-  font-weight:500; box-shadow:0 2px 8px rgba(0,0,0,0.05);
+  background:var(--glass); color:var(--text); border:1px solid var(--glass-border);
+  font-weight:500; box-shadow:0 4px 16px rgba(20,10,50,0.10), inset 0 1px 0 rgba(255,255,255,0.4);
+  backdrop-filter:blur(20px) saturate(150%); -webkit-backdrop-filter:blur(20px) saturate(150%);
 }
 .btn.link{background:transparent; color:var(--primary); font-weight:600; box-shadow:none; padding:8px; margin:4px 0;}
-.btn.danger{background:linear-gradient(135deg, var(--danger), #ff7676); box-shadow:0 8px 20px rgba(229,72,77,0.25);}
+.btn.danger{background:linear-gradient(135deg, var(--danger), #ff7676); box-shadow:0 8px 20px rgba(229,72,77,0.3), inset 0 1px 0 rgba(255,255,255,0.3);}
 .grid2{display:grid; grid-template-columns:1fr 1fr; gap:10px;}
 label{display:block; font-size:0.82rem; font-weight:600; margin:14px 0 5px; color:var(--muted); letter-spacing:0.01em;}
 input,select,textarea{
-  width:100%; padding:13px; border-radius:14px; border:1.5px solid var(--border);
-  background:var(--card2); color:var(--text); font-size:1rem; font-family:inherit;
+  width:100%; padding:13px; border-radius:16px; border:1px solid var(--glass-border);
+  background:var(--input-bg); color:var(--text); font-size:1rem; font-family:inherit;
+  backdrop-filter:blur(14px); -webkit-backdrop-filter:blur(14px);
   transition:border-color 0.2s ease, box-shadow 0.2s ease;
 }
 input:focus,select:focus,textarea:focus{
-  outline:none; border-color:var(--primary); box-shadow:0 0 0 4px rgba(108,92,231,0.14);
+  outline:none; border-color:var(--primary); box-shadow:0 0 0 4px rgba(91,83,224,0.16);
 }
-::placeholder{color:var(--muted); opacity:0.7;}
+::placeholder{color:var(--muted); opacity:0.75;}
 textarea{min-height:70px; resize:vertical;}
 .list-item{
-  display:flex; justify-content:space-between; align-items:center;
-  padding:15px; border:1px solid var(--border); border-radius:16px; margin-bottom:9px;
-  background:var(--card); cursor:pointer; box-shadow:0 4px 14px rgba(30,20,60,0.06);
+  position:relative; display:flex; justify-content:space-between; align-items:center;
+  padding:15px; border:1px solid var(--glass-border); border-radius:18px; margin-bottom:9px;
+  background:var(--glass); cursor:pointer; backdrop-filter:blur(22px) saturate(150%); -webkit-backdrop-filter:blur(22px) saturate(150%);
+  box-shadow:0 6px 18px rgba(20,10,50,0.10), inset 0 1px 0 rgba(255,255,255,0.4);
   transition:transform 0.15s ease, box-shadow 0.15s ease;
   animation:fadeSlide 0.4s ease both;
+  overflow:hidden;
 }
-.list-item:active{transform:scale(0.98); box-shadow:0 2px 8px rgba(30,20,60,0.08);}
+.list-item:active{transform:scale(0.98); box-shadow:0 3px 10px rgba(20,10,50,0.12);}
 .topbar{display:flex; align-items:center; gap:10px; margin-bottom:18px;}
 .topbar .btn{width:auto; margin:0; padding:9px 15px; font-size:0.9rem;}
-.detail-row{display:flex; flex-direction:column; margin-bottom:14px; padding-bottom:14px; border-bottom:1px solid var(--border);}
+.detail-row{display:flex; flex-direction:column; margin-bottom:14px; padding-bottom:14px; border-bottom:1px solid var(--glass-border);}
 .detail-row:last-child{border-bottom:none; margin-bottom:0; padding-bottom:0;}
 .detail-row .k{font-size:0.78rem; color:var(--muted); font-weight:600; text-transform:uppercase; letter-spacing:0.04em;}
-.detail-row .v{font-size:1.02rem; margin-top:4px; white-space:pre-wrap;}
+.detail-row .v{font-size:1.02rem; margin-top:4px; white-space:pre-wrap; color:var(--text);}
 .empty{text-align:center; color:var(--muted); padding:34px 0;}
 .status{font-size:0.85rem; color:var(--muted); margin-bottom:10px; min-height:18px;}
 .info-btn{
   position:fixed; right:16px; bottom:calc(16px + env(safe-area-inset-bottom,0px));
-  width:46px; height:46px; border-radius:50%; border:none; z-index:50;
-  background:linear-gradient(135deg, var(--primary), var(--primary2)); color:#fff;
-  font-size:1.2rem; box-shadow:0 8px 20px rgba(108,92,231,0.35); cursor:pointer;
+  width:48px; height:48px; border-radius:50%; border:1px solid var(--glass-border); z-index:50;
+  background:var(--glass-strong); backdrop-filter:blur(20px) saturate(160%); -webkit-backdrop-filter:blur(20px) saturate(160%);
+  color:var(--text); font-size:1.2rem;
+  box-shadow:0 8px 22px rgba(20,10,50,0.2), inset 0 1px 0 rgba(255,255,255,0.5); cursor:pointer;
   display:flex; align-items:center; justify-content:center;
 }
 .info-overlay{
-  position:fixed; inset:0; background:rgba(0,0,0,0.45); z-index:60;
+  position:fixed; inset:0; background:rgba(20,10,40,0.35); backdrop-filter:blur(6px); -webkit-backdrop-filter:blur(6px); z-index:60;
   display:flex; align-items:flex-end; justify-content:center;
-  animation:fadeSlide 0.25s ease both;
+  animation:fadeSlide 0.3s ease both;
 }
 .info-sheet{
-  background:var(--card); border-radius:24px 24px 0 0; padding:22px 20px calc(24px + env(safe-area-inset-bottom,0px));
-  max-width:520px; width:100%; max-height:80vh; overflow-y:auto; box-shadow:0 -10px 30px rgba(0,0,0,0.2);
+  background:var(--glass-strong); backdrop-filter:blur(32px) saturate(160%); -webkit-backdrop-filter:blur(32px) saturate(160%);
+  border:1px solid var(--glass-border); border-bottom:none;
+  border-radius:28px 28px 0 0; padding:22px 20px calc(24px + env(safe-area-inset-bottom,0px));
+  max-width:520px; width:100%; max-height:80vh; overflow-y:auto;
+  box-shadow:0 -10px 40px rgba(0,0,0,0.25), inset 0 1px 0 rgba(255,255,255,0.5);
 }
-.info-sheet h2{font-family:'Poppins',sans-serif; font-size:1.2rem; margin:0 0 4px;}
-.info-item{margin-bottom:16px; padding-bottom:16px; border-bottom:1px solid var(--border);}
+.info-sheet h2{font-family:'Poppins',sans-serif; font-size:1.2rem; margin:0 0 4px; color:var(--text);}
+.info-item{margin-bottom:16px; padding-bottom:16px; border-bottom:1px solid var(--glass-border);}
 .info-item:last-child{border-bottom:none; margin-bottom:0; padding-bottom:0;}
-.info-item .t{font-weight:600; font-size:0.98rem; margin-bottom:3px;}
+.info-item .t{font-weight:600; font-size:0.98rem; margin-bottom:3px; color:var(--text);}
 .info-item .d{font-size:0.88rem; color:var(--muted); line-height:1.5;}
 </style>
 </head>
@@ -157,6 +186,58 @@ function render(html){
   void app.offsetWidth;
   app.style.animation = '';
 }
+
+// ---------------- ELASTIC "LIQUID GLASS" STRETCH ----------------
+(function initElasticStretch(){
+  let startX = 0, startY = 0, dragging = false;
+  const MAX_STRETCH = 90;
+  const RESIST = 0.55;
+
+  function atTop(){ return (window.scrollY || document.documentElement.scrollTop) <= 0; }
+  function atBottom(){
+    const doc = document.documentElement;
+    return (window.scrollY + window.innerHeight) >= (doc.scrollHeight - 1);
+  }
+
+  document.addEventListener('touchstart', function(e){
+    if(e.touches.length !== 1) return;
+    startX = e.touches[0].clientX;
+    startY = e.touches[0].clientY;
+    dragging = true;
+    app.style.transition = 'none';
+  }, {passive:true});
+
+  document.addEventListener('touchmove', function(e){
+    if(!dragging) return;
+    const t = e.touches[0];
+    const dx = t.clientX - startX;
+    const dy = t.clientY - startY;
+
+    let oy = 0;
+    const pullingDown = dy > 0 && atTop();
+    const pullingUp = dy < 0 && atBottom();
+    if(pullingDown || pullingUp){
+      oy = Math.max(-MAX_STRETCH, Math.min(MAX_STRETCH, dy * RESIST));
+      e.preventDefault();
+    }
+    const ox = Math.max(-MAX_STRETCH, Math.min(MAX_STRETCH, dx * RESIST));
+
+    if(oy !== 0 || Math.abs(ox) > 2){
+      const sx = 1 + Math.abs(ox) / 220;
+      const sy = 1 + Math.abs(oy) / 160;
+      app.style.transform = `translate(${ox}px, ${oy}px) scale(${sx.toFixed(3)}, ${sy.toFixed(3)})`;
+    }
+  }, {passive:false});
+
+  function release(){
+    if(!dragging) return;
+    dragging = false;
+    app.style.transition = 'transform 0.6s cubic-bezier(0.34, 1.56, 0.64, 1)';
+    app.style.transform = 'translate(0,0) scale(1,1)';
+  }
+  document.addEventListener('touchend', release, {passive:true});
+  document.addEventListener('touchcancel', release, {passive:true});
+})();
 
 function topbar(title, backFn){
   return `<div class="topbar">
@@ -238,18 +319,18 @@ const SUBJECT_DATA = {
     ]
   },
   "Engineering Mathematics-I": {
-    notes: "Unit 1: Matrices — elementary transformations, rank, Cayley-Hamilton theorem, eigen values/vectors, Hermitian/Unitary matrices.\nUnit 2: Differential Calculus-I — successive differentiation, Leibnitz theorem, curve tracing, partial derivatives, Euler's theorem.\nUnit 3: Differential Calculus-II — Taylor's & Maclaurin's series, maxima-minima of several variables, Lagrange's multipliers, Jacobians.\nUnit 4: Multiple Integration — double/triple integrals, Beta-Gamma functions, Dirichlet's integral.\nUnit 5: Vector Calculus — gradient, curl, divergence, line/surface/volume integrals, Gauss/Green/Stoke's theorem.",
-    questions: "1. State and prove Cayley-Hamilton theorem.\n2. Find eigen values and eigen vectors of a given matrix.\n3. State Euler's theorem for homogeneous functions.\n4. Find maxima and minima of a function of two variables.\n5. Evaluate a double integral by changing the order of integration.\n6. State and explain Beta and Gamma functions.\n7. Prove Gauss Divergence theorem.\n8. Find directional derivative of a scalar function.\n9. Explain the concept of Jacobians with an example.\n10. State Stoke's theorem and give its application.",
+    notes: "Unit 1: Matrices — symmetric/skew-symmetric/orthogonal & complex matrices, rank via elementary transformations, Rank-Nullity theorem, Cayley-Hamilton theorem, eigen values/vectors, diagonalisation.\nUnit 2: Differential Calculus-I — limits, continuity, differentiability, Rolle's theorem, Lagrange's & Cauchy's mean value theorems, successive differentiation, Leibnitz theorem, envelope/involutes/evolutes, curve tracing.\nUnit 3: Differential Calculus-II — partial & total derivatives, Euler's theorem, Taylor's & Maclaurin's series, maxima-minima of several variables, Lagrange's multipliers, Jacobians, error approximation.\nUnit 4: Multivariable Calculus-I — double/triple integrals, change of order/variables, areas & volumes, centre of mass & gravity.\nUnit 5: Vector Calculus — gradient, curl, divergence, directional derivatives, tangent/normal planes, line/surface/volume integrals, Gauss/Green/Stoke's theorem.",
+    questions: "1. State and prove Cayley-Hamilton theorem.\n2. Find eigen values and eigen vectors of a given matrix and diagonalise it.\n3. State and verify Rolle's theorem and Lagrange's mean value theorem with an example.\n4. State Euler's theorem for homogeneous functions.\n5. Find maxima and minima of a function of two variables.\n6. Evaluate a double integral by changing the order of integration.\n7. Find the centre of gravity of a given lamina using double integration.\n8. Prove Gauss Divergence theorem.\n9. Explain the concept of Jacobians with an example.\n10. State Stoke's theorem and give its application.",
     mockTest: [
       {q:"A matrix whose transpose equals its conjugate is called:", options:["Symmetric","Hermitian","Orthogonal","Skew-symmetric"], correct:1},
       {q:"The rank of a matrix is determined by:", options:["Number of rows","Number of non-zero rows in echelon form","Number of columns","Determinant value only"], correct:1},
+      {q:"Rolle's theorem requires the function to be equal at:", options:["Two interior points","The endpoints of the interval","The midpoint only","No specific points"], correct:1},
       {q:"Euler's theorem is applied to:", options:["Homogeneous functions","Linear equations","Matrices","Vectors"], correct:0},
-      {q:"Beta function B(m,n) is related to Gamma function as:", options:["B(m,n)=Γ(m)Γ(n)/Γ(m+n)","B(m,n)=Γ(m)+Γ(n)","B(m,n)=Γ(m)-Γ(n)","B(m,n)=Γ(mn)"], correct:0},
+      {q:"Rank-Nullity theorem relates rank of a matrix with:", options:["Its determinant","Nullity (dimension of null space)","Its trace","Its inverse"], correct:1},
       {q:"Divergence of a vector field is a:", options:["Vector","Scalar","Tensor","Matrix"], correct:1},
       {q:"Curl of a gradient of a scalar function is always:", options:["1","0","Infinity","Undefined"], correct:1},
       {q:"Which theorem relates surface integral to volume integral?", options:["Green's theorem","Stoke's theorem","Gauss Divergence theorem","Cayley-Hamilton"], correct:2},
       {q:"Cayley-Hamilton theorem states every square matrix satisfies its own:", options:["Determinant","Characteristic equation","Inverse","Adjoint"], correct:1},
-      {q:"The Jacobian is used to:", options:["Solve linear equations","Transform variables in multiple integrals","Find eigen values","Find rank of matrix"], correct:1},
       {q:"Lagrange's method of multipliers is used for:", options:["Finding roots","Constrained optimization","Solving matrices","Integration"], correct:1},
     ]
   },
@@ -318,16 +399,16 @@ const SUBJECT_DATA = {
     ]
   },
   "Engineering Mathematics-II": {
-    notes: "Unit 1: Higher order Linear ODEs, Cauchy-Euler equation, variation of parameters.\nUnit 2: Laplace Transform — properties, inverse Laplace, convolution theorem, applications.\nUnit 3: Sequence & Series — convergence tests, Fourier series.\nUnit 4: Complex Variable-Differentiation — Cauchy-Riemann equations, analytic functions, conformal mapping.\nUnit 5: Complex Variable-Integration — Cauchy integral theorem/formula, Taylor's & Laurent's series, residues.",
-    questions: "1. Solve a linear differential equation with constant coefficients.\n2. State and prove the properties of Laplace Transform.\n3. Explain convolution theorem with an example.\n4. State the ratio test and D'Alembert's test for convergence of series.\n5. Derive the Cauchy-Riemann equations.\n6. Explain conformal mapping with an example.\n7. State and prove Cauchy's Integral theorem.\n8. Explain Taylor's and Laurent's series expansion.\n9. State Cauchy's Residue theorem and its applications.\n10. Explain half-range Fourier sine and cosine series.",
+    notes: "Unit 1: Higher order Linear ODEs with constant/variable coefficients, Cauchy-Euler equation, method of variation of parameters, series solutions (Frobenius method).\nUnit 2: Laplace Transform — properties, inverse Laplace, convolution theorem, applications to solving differential equations.\nUnit 3: Sequence & Series — convergence tests (Ratio, D'Alembert's, Raabe's), Fourier series, half-range sine/cosine series.\nUnit 4: Complex Variable-Differentiation — Cauchy-Riemann equations, analytic & harmonic functions, conformal mapping, Mobius transformation.\nUnit 5: Complex Variable-Integration — contour integrals, Cauchy-Goursat theorem, Cauchy's integral formula, Taylor's & Laurent's series, Liouville's theorem, singularities, residues, evaluation of real integrals using residue theorem.",
+    questions: "1. Solve a linear differential equation with constant coefficients.\n2. Solve an ODE using the Frobenius (series solution) method.\n3. State and prove the properties of Laplace Transform.\n4. Explain convolution theorem with an example.\n5. State the ratio test and D'Alembert's test for convergence of series.\n6. Derive the Cauchy-Riemann equations.\n7. State and prove Cauchy-Goursat theorem.\n8. Explain Taylor's and Laurent's series expansion.\n9. State Cauchy's Residue theorem and use it to evaluate a real definite integral.\n10. Explain half-range Fourier sine and cosine series.",
     mockTest: [
       {q:"Laplace transform converts a differential equation into:", options:["A differential equation","An algebraic equation","An integral equation","A matrix equation"], correct:1},
       {q:"Cauchy-Riemann equations are used to check:", options:["Continuity","Differentiability of complex functions","Convergence","Integration"], correct:1},
       {q:"A function satisfying Cauchy-Riemann equations is called:", options:["Continuous","Analytic","Divergent","Bounded"], correct:1},
-      {q:"Which test is used to check the convergence of a series?", options:["Ratio test","Newton's method","Simplex method","Gauss elimination"], correct:0},
+      {q:"The Frobenius method is used to solve:", options:["Linear algebraic equations","ODEs using series solutions","Matrices","Integrals"], correct:1},
       {q:"The Laplace Transform of a constant 'a' is:", options:["a","a/s","as","1/a"], correct:1},
       {q:"Fourier series is used to represent:", options:["Periodic functions","Random functions","Only polynomials","Only exponential functions"], correct:0},
-      {q:"Cauchy's Integral formula is used to evaluate:", options:["Real integrals only","Complex integrals over a closed contour","Derivatives only","Matrices"], correct:1},
+      {q:"Cauchy-Goursat theorem states that the integral of an analytic function over a closed contour is:", options:["Infinite","Zero","Equal to its derivative","Undefined"], correct:1},
       {q:"Laurent's series is used when the function has:", options:["No singularity","A singularity within the region","Only real values","Constant value"], correct:1},
       {q:"Residue theorem is used to evaluate:", options:["Derivatives","Contour integrals","Matrices","Limits only"], correct:1},
       {q:"Cauchy-Euler equation is a type of:", options:["Non-linear equation","Linear differential equation with variable coefficients","Partial differential equation","Algebraic equation"], correct:1},
@@ -380,10 +461,26 @@ const SUBJECT_DATA = {
       {q:"Homophones are words that:", options:["Sound the same but have different meanings","Look the same but sound different","Have the same meaning","Are opposite in meaning"], correct:0},
       {q:"Effective leadership requires good:", options:["Listening and responding skills","Ignoring team members","Avoiding communication","Working alone"], correct:0},
     ]
+  },
+  "Web Technology": {
+    notes: "Unit 1 (HTML Basics): Headings & paragraphs, text formatting tags (strong, em, mark, code), ordered/unordered/nested lists, hyperlinks (internal/external), images, tables, forms, audio/video elements, semantic page structure (header, section, article, footer).\nUnit 2 (CSS Styling): Inline, Internal and External CSS, colors/gradients/typography, CSS Box Model (content-padding-border-margin, box-sizing), CSS positioning (static, relative, absolute, fixed, sticky).\nUnit 3 (JavaScript): alert(), prompt(), confirm(), arithmetic operations, conditional statements (if-else), functions (factorial example), event handling with addEventListener, button click events.\nUnit 4 (Responsive Design): Bootstrap grid system (rows/columns/breakpoints), responsive navigation bar, responsive registration form.\nUnit 5 (Project): Building a personal portfolio website using semantic HTML, CSS and responsive layout.",
+    questions: "1. Differentiate between <strong>/<em> and <b>/<i> tags in HTML.\n2. Explain the difference between ordered and unordered lists with an example.\n3. What is the difference between internal, inline, and external CSS?\n4. Explain the CSS Box Model with a diagram.\n5. Differentiate between relative, absolute, fixed and sticky positioning in CSS.\n6. Write a JavaScript function to calculate the factorial of a number.\n7. Explain the difference between prompt() and confirm() in JavaScript.\n8. What is the Bootstrap grid system? Explain rows and columns.\n9. Explain how addEventListener is used to handle button clicks.\n10. What are the key sections of a personal portfolio website?",
+    mockTest: [
+      {q:"Which tag is used to create a hyperlink in HTML?", options:["<link>","<a>","<href>","<nav>"], correct:1},
+      {q:"Which attribute makes an image accessible to screen readers?", options:["src","alt","title","width"], correct:1},
+      {q:"Which CSS property controls the space between content and border?", options:["margin","padding","border","outline"], correct:1},
+      {q:"Which CSS positioning value keeps an element fixed relative to the viewport?", options:["static","relative","fixed","inherit"], correct:2},
+      {q:"Which JavaScript function displays a dialog box asking for user input?", options:["alert()","confirm()","prompt()","console.log()"], correct:2},
+      {q:"Which method is preferred to attach an event handler in modern JavaScript?", options:["onclick attribute only","addEventListener()","inline script only","document.write()"], correct:1},
+      {q:"In Bootstrap, which class creates a responsive container for a grid row?", options:["row","container","col-md-6","navbar"], correct:1},
+      {q:"Which HTML5 element is used to embed video?", options:["<media>","<video>","<embed>","<movie>"], correct:1},
+      {q:"box-sizing: border-box means the declared width includes:", options:["Only content","Content and padding only","Content, padding and border","Margin only"], correct:2},
+      {q:"Which HTML element is best suited for a page's main navigation links?", options:["<div>","<nav>","<span>","<table>"], correct:1},
+    ]
   }
 };
 const SEM1_SUBJECTS = ["Engineering Chemistry","Engineering Mathematics-I","Fundamentals of Electrical Engineering","Programming for Problem Solving","Environment and Ecology"];
-const SEM2_SUBJECTS = ["Engineering Physics","Engineering Mathematics-II","Fundamentals of Electronics Engineering","Fundamentals of Mechanical Engineering","Soft Skills"];
+const SEM2_SUBJECTS = ["Engineering Physics","Engineering Mathematics-II","Fundamentals of Electronics Engineering","Fundamentals of Mechanical Engineering","Soft Skills","Web Technology"];
 function buildSemMap(list){ const o={}; list.forEach(name=>{ o[name]=SUBJECT_DATA[name]; }); return o; }
 const STUDY_DATA = {
   CSE: { "Semester 1": buildSemMap(SEM1_SUBJECTS), "Semester 2": buildSemMap(SEM2_SUBJECTS) },
